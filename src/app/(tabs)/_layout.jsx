@@ -6,7 +6,17 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 
 function _layout() {
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        tabBarShowLabel: true,
+        tabBarItemStyle: {
+          width: "100%",
+          height: "100%",
+          // justifyContent: "center",
+          // alignItems: "center",
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
