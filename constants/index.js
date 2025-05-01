@@ -1,5 +1,5 @@
-export const weatherImages: { [key: string]: any } = {
-  "Partly cloudy": require("../assets/images/partlycloudy.png"),
+export const weatherImages = {
+  "Partly Cloudy": require("../assets/images/partlycloudy.png"),
   "Moderate rain": require("../assets/images/moderaterain.png"),
   "Patchy rain possible": require("../assets/images/moderaterain.png"),
   Sunny: require("../assets/images/sun.png"),
