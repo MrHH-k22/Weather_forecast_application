@@ -12,8 +12,12 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts",
-    "app/_layout.jsx",
-    "app/index.jsx",
-    "constants/index.js"
+    "src/app/_layout.jsx",
+    "src/app/index.jsx",
+    "constants/index.js",
+    "src/components/footerTab.jsx",
+    "src/features/account/signUp.jsx",
+    "src/features/account/signIn.jsx",
+    "src/features/account/account.jsx"
   ]
 }

@@ -9,7 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { featchWeatherForecast, fetchLocation } from "../api/weather";
+import { featchWeatherForecast, fetchLocation } from "../../api/weather";
 import {
   CalendarDaysIcon,
   MagnifyingGlassIcon,
@@ -17,8 +17,9 @@ import {
 import { MapPinIcon } from "react-native-heroicons/solid";
 import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
-import { weatherImages } from "../constants/index";
+import { weatherImages } from "../../constants/index";
 import * as Progress from "react-native-progress";
+import FooterTab from "../components/footerTab";
 
 export default function Index() {
   const [locations, setLocations] = useState([]);
@@ -81,7 +82,7 @@ export default function Index() {
       />
       <Image
         blurRadius={70}
-        source={require("../assets/images/bg.png")}
+        source={require("../../assets/images/bg.png")}
         className="absolute top-0 left-0 w-full h-full"
       />
       {loading ? (
@@ -167,7 +168,7 @@ export default function Index() {
             <View className="flex-row justify-between mx-4">
               <View className="flex flex-row items-center space-x-2">
                 <Image
-                  source={require("../assets/icons/wind.png")}
+                  source={require("../../assets/icons/wind.png")}
                   className="w-6 h-6"
                 />
                 <Text className="font-semibold text-white textbase">
@@ -177,7 +178,7 @@ export default function Index() {
               </View>
               <View className="flex flex-row items-center space-x-2">
                 <Image
-                  source={require("../assets/icons/drop.png")}
+                  source={require("../../assets/icons/drop.png")}
                   className="w-6 h-6"
                 />
                 <Text className="font-semibold text-white textbase">
@@ -187,7 +188,7 @@ export default function Index() {
               </View>
               <View className="flex flex-row items-center space-x-2">
                 <Image
-                  source={require("../assets/icons/sun.png")}
+                  source={require("../../assets/icons/sun.png")}
                   className="w-6 h-6"
                 />
                 <Text className="font-semibold text-white textbase">
@@ -235,6 +236,7 @@ export default function Index() {
               })}
             </ScrollView>
           </View>
+          <FooterTab />
         </SafeAreaView>
       )}
     </View>
