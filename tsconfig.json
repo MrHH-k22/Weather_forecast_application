@@ -18,6 +18,7 @@
     "src/components/footerTab.jsx",
     "src/features/account/signUp.jsx",
     "src/features/account/signIn.jsx",
-    "src/features/account/account.jsx"
+    "src/features/account/account.jsx",
+    "src/app/cities/[id].jsx"
   ]
 }

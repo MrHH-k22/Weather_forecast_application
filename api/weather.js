@@ -24,7 +24,6 @@ const apiCall = async (endpoint) => {
 
 export const featchWeatherForecast = (params) => {
   let forecastUrl = forecastEndpoint(params);
-  console.log("forecastUrl", forecastUrl);
   return apiCall(forecastUrl);
 };
 
