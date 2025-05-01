@@ -1,5 +1,6 @@
 import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
-export default function FormSignUp() {
+
+export default function FormSignUp({ toggleForm }) {
   return (
     <View className="flex-1 relative">
       <View className="flex-1 justify-center items-center">
@@ -13,7 +14,7 @@ export default function FormSignUp() {
           source={require("../../assets/icons/weather.png")}
           className="w-52 h-52 mt-8"
           style={{ tintColor: "#0D719B" }}
-        ></Image>
+        />
         <View className="flex flex-col items-center mt-16">
           <TextInput
             placeholder="Username"
@@ -33,6 +34,10 @@ export default function FormSignUp() {
           />
           <TouchableOpacity className="bg-blue-500 rounded-full p-2 w-80 mt-4">
             <Text className="text-white text-center">Create</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleForm} className="mt-4 items-center">
+            <Text className="text-white">Already have an account?</Text>
+            <Text className="text-yellow-400">Sign In</Text>
           </TouchableOpacity>
         </View>
       </View>
