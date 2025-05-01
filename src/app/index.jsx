@@ -19,6 +19,7 @@ import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import { weatherImages } from "../../constants/index";
 import * as Progress from "react-native-progress";
+import FooterTab from "../components/footerTab";
 
 export default function Index() {
   const [locations, setLocations] = useState([]);
@@ -235,6 +236,7 @@ export default function Index() {
               })}
             </ScrollView>
           </View>
+          <FooterTab />
         </SafeAreaView>
       )}
     </View>
