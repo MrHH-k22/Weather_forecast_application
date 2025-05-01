@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { featchWeatherForecast, fetchLocation } from "../api/weather";
-
 import {
   CalendarDaysIcon,
   MagnifyingGlassIcon,
@@ -21,97 +20,13 @@ import { debounce } from "lodash";
 import { weatherImages } from "../constants/index";
 import * as Progress from "react-native-progress";
 
-interface WeatherData {
-  location: {
-    name: string;
-    region: string;
-    country: string;
-    lat: number;
-    lon: number;
-    tz_id: string;
-    localtime_epoch: number;
-    localtime: string;
-  };
-  current: {
-    last_updated_epoch: number;
-    last_updated: string;
-    temp_c: number;
-    temp_f: number;
-    is_day: number;
-    condition: {
-      text: string;
-      icon: string;
-      code: number;
-    };
-    wind_mph: number;
-    wind_kph: number;
-    wind_degree: number;
-    wind_dir: string;
-    pressure_mb: number;
-    pressure_in: number;
-    precip_mm: number;
-    precip_in: number;
-    humidity: number;
-    cloud: number;
-    feelslike_c: number;
-    feelslike_f: number;
-    windchill_c: number;
-    windchill_f: number;
-    heatindex_c: number;
-    heatindex_f: number;
-    dewpoint_c: number;
-    dewpoint_f: number;
-    vis_km: number;
-    vis_miles: number;
-    uv: number;
-    gust_mph: number;
-    gust_kph: number;
-  };
-  forecast: {
-    forecastday: {
-      date: string;
-      date_epoch: number;
-      day: {
-        maxtemp_c: number;
-        maxtemp_f: number;
-        mintemp_c: number;
-        mintemp_f: number;
-        avgtemp_c: number;
-        avgtemp_f: number;
-        maxwind_mph: number;
-        maxwind_kph: number;
-        totalprecip_mm: number;
-        totalprecip_in: number;
-        totalsnow_cm: number;
-        avgvis_km: number;
-        avgvis_miles: number;
-        avghumidity: number;
-        daily_will_it_rain: number;
-        daily_chance_of_rain: number;
-        daily_will_it_snow: number;
-        daily_chance_of_snow: number;
-        condition: {
-          text: string;
-          icon: string;
-          code: number;
-        };
-        uv: number;
-      };
-    }[];
-  };
-}
-
 export default function Index() {
-  const [locations, setLocations] = useState<
-    { name: string; country: string }[]
-  >([]);
-
+  const [locations, setLocations] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
-  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  function handleLocation(loc: any) {
-    // console.log("Location selected:", location);
+  function handleLocation(loc) {
     setLocations([]);
     setLoading(true);
     featchWeatherForecast({
@@ -119,16 +34,13 @@ export default function Index() {
       days: "7",
     }).then((data) => {
       setWeather(data);
-      // console.log("Weather data:", data);
       setLoading(false);
     });
   }
 
-  function handleSearch(value: string) {
-    // console.log("Search value:", value);
+  function handleSearch(value) {
     if (value.length > 2) {
       fetchLocation({ cityName: value }).then((data) => {
-        // console.log("Fetched locations:", data);
         setLocations(data);
       });
     }
@@ -138,27 +50,27 @@ export default function Index() {
     fetchMyWeatherData();
   }, []);
 
+  function getWeatherImage(condition) {
+    if (!condition) return weatherImages.other;
+    // Chuẩn hóa: loại bỏ khoảng trắng dư, viết hoa chữ cái đầu mỗi từ
+    const key = condition.trim();
+    return weatherImages[key] || weatherImages.other;
+  }
+
   const current = weather?.current;
   const location = weather?.location;
 
   function fetchMyWeatherData() {
-    // console.log("Fetching weather data first time");
     featchWeatherForecast({
       cityName: "singapore",
       days: "7",
     }).then((data) => {
       setWeather(data);
-      // console.log("Weather data:", data);
-      // console.log("Weather condition:", current?.condition?.text);
-      // console.log("Image source:", weatherImages[]);
-
       setLoading(false);
     });
   }
 
   const handleTextDebounce = useCallback(debounce(handleSearch, 1200), []);
-
-  // console.log("Weather data:", weather);
 
   return (
     <View className="relative flex-1">
@@ -237,14 +149,8 @@ export default function Index() {
             </Text>
             {/* weather image */}
             <View className="flex-row justify-center">
-              {/*  source={{ uri: "https:" + current?.condition?.icon }} */}
               <Image
-                source={
-                  current?.condition?.text &&
-                  weatherImages[current.condition.text]
-                    ? weatherImages[current.condition.text]
-                    : require("../assets/images/sun.png")
-                }
+                source={getWeatherImage(current?.condition?.text)}
                 className="w-52 h-52"
               />
             </View>
@@ -304,37 +210,29 @@ export default function Index() {
               contentContainerStyle={{ paddingHorizontal: 15 }}
               showsHorizontalScrollIndicator={false}
             >
-              {weather?.forecast?.forecastday?.map(
-                (
-                  item: WeatherData["forecast"]["forecastday"][number],
-                  index: number
-                ) => {
-                  let date = new Date(item.date);
-                  let options = { weekday: "long" } as const;
-                  let dayName = date.toLocaleDateString("en-US", options);
-                  dayName = dayName.split(",")[0];
-                  return (
-                    <View
-                      key={index}
-                      className="flex items-center justify-center w-24 py-3 mr-4 space-y-1 rounded-3xl bg-slate-100/20"
-                    >
-                      <Image
-                        source={
-                          current?.condition?.text &&
-                          weatherImages[current.condition.text]
-                            ? weatherImages[current.condition.text]
-                            : require("../assets/images/sun.png")
-                        }
-                        className="w-11 h-11"
-                      />
-                      <Text className="text-white">{item.date}</Text>
-                      <Text className="text-2xl font-semibold text-white">
-                        {item?.day?.avgtemp_c}&#176;
-                      </Text>
-                    </View>
-                  );
-                }
-              )}
+              {weather?.forecast?.forecastday?.map((item, index) => {
+                let date = new Date(item.date);
+                let options = { weekday: "long" };
+                let dayName = date.toLocaleDateString("en-US", options);
+                dayName = dayName.split(",")[0];
+                console.log("item.day.condition.text", item.day.condition.text);
+                return (
+                  <View
+                    key={index}
+                    className="flex items-center justify-center w-24 py-3 mr-4 space-y-1 rounded-3xl bg-slate-100/20"
+                  >
+                    <Image
+                      source={getWeatherImage(item.day.condition.text)}
+                      className="w-11 h-11"
+                    />
+
+                    <Text className="text-white">{item.date}</Text>
+                    <Text className="text-2xl font-semibold text-white">
+                      {item?.day?.avgtemp_c}&#176;
+                    </Text>
+                  </View>
+                );
+              })}
             </ScrollView>
           </View>
         </SafeAreaView>
