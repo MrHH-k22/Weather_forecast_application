@@ -15,6 +15,7 @@ const apiCall = async (endpoint) => {
   };
   try {
     const response = await axios.request(options);
+
     return response.data;
   } catch (err) {
     console.log("error: ", err);
@@ -24,10 +25,12 @@ const apiCall = async (endpoint) => {
 
 export const featchWeatherForecast = (params) => {
   let forecastUrl = forecastEndpoint(params);
+  console.log("forecastUrl", forecastUrl);
   return apiCall(forecastUrl);
 };
 
 export const fetchLocation = (params) => {
   let locationUrl = locationEndpoint(params);
+  console.log("locationUrl", locationUrl);
   return apiCall(locationUrl);
 };
