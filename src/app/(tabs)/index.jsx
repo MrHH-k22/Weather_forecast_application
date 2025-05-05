@@ -645,13 +645,15 @@ export default function Index() {
                     <Text className="text-3xl font-semibold text-center text-white">
                       {uvLevel}
                     </Text>
-                    <Progress.Bar
-                      progress={uvIndex / 10}
-                      width={140}
-                      height={15}
-                      color={uvColor}
-                      borderRadius={20}
-                    />
+                    <View className="w-full">
+                      <Progress.Bar
+                        progress={uvIndex / 10}
+                        width={null}
+                        height={15}
+                        color={uvColor}
+                        borderRadius={20}
+                      />
+                    </View>
                   </View>
                   <View className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
                     <View className="flex flex-row items-center gap-1">
