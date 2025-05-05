@@ -15,3 +15,21 @@ export const weatherImages = {
   "Moderate or heavy rain with thunder": require("../assets/images/heavyrain.png"),
   other: require("../assets/images/moderaterain.png"),
 };
+
+export const weatherBackgroundImages = {
+  "Partly Cloudy": require("../assets/images/cloudBackground.jpg"),
+  "Moderate rain": require("../assets/images/cloudBackground.jpg"),
+  "Patchy rain possible": require("../assets/images/cloudBackground.jpg"),
+  Sunny: require("../assets/images/sunnyBackground.jpg"),
+  Clear: require("../assets/images/sunnyBackground.jpg"),
+  Overcast: require("../assets/images/sunnyBackground.jpg"),
+  Cloudy: require("../assets/images/cloudBackground.jpg"),
+  "Light rain": require("../assets/images/rainBackground.jpg"),
+  "Moderate rain at times": require("../assets/images/rainBackground.jpg"),
+  "Heavy rain": require("../assets/images/rainBackground.jpg"),
+  "Heavy rain at times": require("../assets/images/rainBackground.jpg"),
+  "Moderate or heavy freezing rain": require("../assets/images/rainBackground.jpg"),
+  "Moderate or heavy rain shower": require("../assets/images/rainBackground.jpg"),
+  "Moderate or heavy rain with thunder": require("../assets/images/rainBackground.jpg"),
+  other: require("../assets/images/sunnyBackground.jpg"),
+};
