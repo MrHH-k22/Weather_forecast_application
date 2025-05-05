@@ -11,9 +11,9 @@ export default function RootLayout() {
     // />
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)/cities" options={{ headerShown: false }} />
+      {/* <Stack.Screen name="(tabs)/cities" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)/account" options={{ headerShown: false }} />
-      <Stack.Screen name="cities/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="cities/[id]" options={{ headerShown: false }} /> */}
     </Stack>
   );
 }
