@@ -31,6 +31,10 @@ import { MapPinIcon } from "react-native-heroicons/solid";
 import { SunIcon } from "react-native-heroicons/solid";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
+//Notification Services
+import { scheduleWeatherNotification } from "../../services/scheduleWeatherNotification";
+import { useNotificationSetup } from "../../services/useNotificationSetup";
+
 // Trong component của bạn
 <MaterialCommunityIcons name="gauge" size={30} color="#007AFF" />;
 
@@ -267,6 +271,17 @@ export default function Index() {
   const cloud = weather?.current?.cloud; // ví dụ: 29.82 inHg
   //rain level
   const rainLevel = weather?.current?.precip_mm; // ví dụ: 29.82 inHg
+
+  // Notification setup
+  useNotificationSetup();
+  useEffect(() => {
+    const setupNotification = async () => {
+      if (weather) {
+        scheduleWeatherNotification(weather);
+      }
+    };
+    setupNotification();
+  }, [weather]);
 
   return (
     <View className="flex-1">
