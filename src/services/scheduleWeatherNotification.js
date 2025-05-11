@@ -14,32 +14,11 @@ export const scheduleWeatherNotification = async (weather) => {
         priority: "high",
       },
       trigger: {
-        seconds: 1, // Show immediately
-        repeats: false, // Don't repeat
-      },
-    });
-  } catch (error) {
-    console.error("Error scheduling notification:", error);
-  }
-};
-
-// Function to schedule periodic weather updates
-export const schedulePeriodicWeatherUpdates = async (weather) => {
-  try {
-    await Notifications.cancelAllScheduledNotificationsAsync();
-
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Weather Update",
-        body: `Current temperature is ${weather.temp_c}°C with ${weather.condition.text}`,
-        data: { weather },
-      },
-      trigger: {
-        seconds: 3600, // Update every hour
+        seconds: 3600,
         repeats: true,
       },
     });
   } catch (error) {
-    console.error("Error scheduling periodic updates:", error);
+    console.error("Error scheduling notification:", error);
   }
 };

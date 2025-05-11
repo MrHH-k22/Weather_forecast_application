@@ -282,7 +282,7 @@ export default function Index() {
       }
     };
     setupNotification();
-  }, [current]);
+  }, [weather]);
 
   return (
     <View className="flex-1">
