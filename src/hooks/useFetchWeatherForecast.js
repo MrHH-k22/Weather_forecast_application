@@ -11,6 +11,7 @@ export function useFetchWeatherForecast(params) {
     queryKey: ["weatherForecast", cityName, days],
     queryFn: () => featchWeatherForecast(cityName, days),
   });
+  // console.log("weatherForecastData", weatherForecastData);
   return {
     weatherForecastData,
     isWeatherForecastLoading,

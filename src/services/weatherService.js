@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_KEY = "3f66cc9bf4fc4f6d80621226250105";
+const API_KEY = "5435e177b2c447248e963352251105";
 
 const forecastEndpoint = (params) =>
   `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${params.cityName}&days=${params.days}&aqi=yes&alerts=no`;
@@ -15,7 +15,7 @@ const apiCall = async (endpoint) => {
   };
   try {
     const response = await axios.request(options);
-    console.log("weather data: ", response.data);
+    // console.log("weather data: ", response.data);
     return response.data;
   } catch (err) {
     console.log("error: ", err);
@@ -25,6 +25,7 @@ const apiCall = async (endpoint) => {
 
 export const featchWeatherForecast = async (cityName, days) => {
   let forecastUrl = forecastEndpoint({ cityName, days });
+  // console.log("forecastUrl", forecastUrl);
   return apiCall(forecastUrl);
 };
 

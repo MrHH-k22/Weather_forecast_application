@@ -20,7 +20,6 @@ import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import * as Progress from "react-native-progress";
 // local imports
-import { featchWeatherForecast, fetchLocation } from "../../../api/weather";
 import { weatherImages } from "../../../constants/index";
 import { weatherBackgroundImages } from "../../../constants/index";
 import FadeInView from "../../components/FadeInView";
@@ -209,7 +208,7 @@ export default function Index() {
       };
     });
 
-  // console.log("dailyForecast", dailyForecast);
+  console.log("dailyForecast", dailyForecast);
 
   // --------------- Fetch Wind information data ------------------
 
@@ -332,7 +331,18 @@ export default function Index() {
                 </View>
 
                 {locations.length > 0 && showSearch ? (
-                  <View className="absolute w-full bg-gray-300 top-16 rounded-3xl">
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 64, // hoặc top: 56/60 tùy chiều cao thanh search
+                      left: 0,
+                      width: "100%",
+                      zIndex: 100, // Đảm bảo cao hơn các thành phần khác
+                      elevation: 10, // Thêm cho Android
+                      borderRadius: 24,
+                      backgroundColor: "#e5e7eb", // bg-gray-300
+                    }}
+                  >
                     {locations.map((loc, index) => {
                       let showBorder = index + 1 != locations.length;
                       let borderclass = showBorder
@@ -487,7 +497,7 @@ export default function Index() {
                 <View className="flex flex-col max-w-md p-4 mx-5 bg-black/55 backdrop-blur-smrounded-3xl">
                   <View className="flex flex-col">
                     {dailyForecast?.map((item, index) => (
-                      <Link href={`/day/${index}`} key={index} asChild>
+                      <Link href={`/charts/HourDetails`} key={index} asChild>
                         <TouchableOpacity className="flex flex-col w-full">
                           <View
                             key={index}
