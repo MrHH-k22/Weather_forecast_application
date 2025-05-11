@@ -16,9 +16,9 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)/cities" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)/account" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)/index" options={{ headerShown: false }} />
         <Stack.Screen name="cities/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="day/[id]" />
+        <Stack.Screen name="charts/HourDetails" />
       </Stack>
     </QueryClientProvider>
   );
