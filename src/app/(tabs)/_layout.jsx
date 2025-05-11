@@ -45,20 +45,6 @@ function _layout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="account"
-        options={{
-          title: "Accounts",
-          headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => (
-            <AntDesign
-              name="user"
-              size={size ?? 24}
-              color={focused ? "#007AFF" : "gray"}
-            />
-          ),
-        }}
-      />
     </Tabs>
   );
 }
