@@ -12,10 +12,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 
-import {
-  CalendarDaysIcon,
-  MagnifyingGlassIcon,
-} from "react-native-heroicons/outline";
 import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import * as Progress from "react-native-progress";
@@ -30,6 +26,11 @@ import { useFetchWeatherLocation } from "../../hooks/useFetchWeatherLocation";
 import { MapPinIcon } from "react-native-heroicons/solid";
 import { SunIcon } from "react-native-heroicons/solid";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import {
+  CalendarDaysIcon,
+  MagnifyingGlassIcon,
+  ChevronRightIcon,
+} from "react-native-heroicons/outline";
 
 //Notification Services
 import { scheduleWeatherNotification } from "../../services/scheduleWeatherNotification";
@@ -212,7 +213,7 @@ export default function Index() {
       };
     });
 
-  console.log("dailyForecast", dailyForecast);
+  // console.log("dailyForecast", dailyForecast);
 
   // --------------- Fetch Wind information data ------------------
 
@@ -500,6 +501,31 @@ export default function Index() {
                     );
                   })}
                 </ScrollView>
+                <View className="mx-5 mt-4">
+                  <Link
+                    href={{
+                      pathname: `/charts/HourDetails`,
+                      params: {
+                        todayForecast: JSON.stringify(todayForecast),
+                        location: JSON.stringify(location),
+                      },
+                    }}
+                    asChild
+                  >
+                    <TouchableOpacity className="w-full py-4 rounded-3xl bg-[#2a6eb6] flex items-center justify-center shadow-black shadow-md">
+                      <View className="flex-row items-center">
+                        <Text className="text-lg font-semibold text-white">
+                          24 Hours forecast
+                        </Text>
+                        <ChevronRightIcon
+                          size={20}
+                          color="white"
+                          style={{ marginLeft: 8 }}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  </Link>
+                </View>
               </View>
               {/* Daily forecast */}
               <View className="mb-4 space-y-3">
@@ -512,64 +538,85 @@ export default function Index() {
                 <View className="flex flex-col max-w-md p-4 mx-5 bg-black/55 backdrop-blur-smrounded-3xl">
                   <View className="flex flex-col">
                     {dailyForecast?.map((item, index) => (
-                      <Link href={`/charts/HourDetails`} key={index} asChild>
-                        <TouchableOpacity className="flex flex-col w-full">
+                      <View
+                        key={index}
+                        className="flex flex-row items-center justify-between py-4 border-b border-blue-400"
+                        style={{ alignItems: "center" }}
+                      >
+                        {/* Ngày */}
+                        <Text
+                          className="text-xl font-bold text-left text-white"
+                          style={{ width: 48 }}
+                        >
+                          {item.day}
+                        </Text>
+
+                        {/* Icon thời tiết */}
+                        <View style={{ width: 32, alignItems: "center" }}>
+                          <Image
+                            source={getWeatherImage(item.icon)}
+                            style={{ width: 24, height: 24 }}
+                          />
+                        </View>
+
+                        {/* Nhiệt độ thấp */}
+                        <Text
+                          className="text-xl text-right text-white"
+                          style={{ width: 36 }}
+                        >
+                          {item.lowTemp}°
+                        </Text>
+
+                        {/* Thanh khoảng nhiệt độ */}
+                        <View
+                          className="relative h-1 mx-4 overflow-hidden bg-blue-400 rounded-full"
+                          style={{ width: 120 }}
+                        >
                           <View
-                            key={index}
-                            className="flex flex-row items-center justify-between py-4 border-b border-blue-400"
-                            style={{ alignItems: "center" }}
-                          >
-                            {/* Ngày */}
-                            <Text
-                              className="text-xl font-bold text-left text-white"
-                              style={{ width: 48 }}
-                            >
-                              {item.day}
-                            </Text>
+                            className="absolute h-full bg-orange-500 rounded-full"
+                            style={{
+                              width: `${
+                                ((item.highTemp - item.lowTemp) / 15) * 100
+                              }%`,
+                            }}
+                          />
+                        </View>
 
-                            {/* Icon thời tiết */}
-                            <View style={{ width: 32, alignItems: "center" }}>
-                              <Image
-                                source={getWeatherImage(item.icon)}
-                                style={{ width: 24, height: 24 }}
-                              />
-                            </View>
-
-                            {/* Nhiệt độ thấp */}
-                            <Text
-                              className="text-xl text-right text-white"
-                              style={{ width: 36 }}
-                            >
-                              {item.lowTemp}°
-                            </Text>
-
-                            {/* Thanh khoảng nhiệt độ */}
-                            <View
-                              className="relative h-1 mx-4 overflow-hidden bg-blue-400 rounded-full"
-                              style={{ width: 120 }}
-                            >
-                              <View
-                                className="absolute h-full bg-orange-500 rounded-full"
-                                style={{
-                                  width: `${
-                                    ((item.highTemp - item.lowTemp) / 15) * 100
-                                  }%`,
-                                }}
-                              />
-                            </View>
-
-                            {/* Nhiệt độ cao */}
-                            <Text
-                              className="text-xl text-right text-white"
-                              style={{ width: 36 }}
-                            >
-                              {item.highTemp}°
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      </Link>
+                        {/* Nhiệt độ cao */}
+                        <Text
+                          className="text-xl text-right text-white"
+                          style={{ width: 36 }}
+                        >
+                          {item.highTemp}°
+                        </Text>
+                      </View>
                     ))}
                   </View>
+                </View>
+                <View className="mx-5 mt-4">
+                  <Link
+                    href={{
+                      pathname: `/charts/HourDetails`,
+                      params: {
+                        todayForecast: JSON.stringify(todayForecast),
+                        location: JSON.stringify(location),
+                      },
+                    }}
+                    asChild
+                  >
+                    <TouchableOpacity className="w-full py-4 rounded-3xl bg-[#2a6eb6] flex items-center justify-center shadow-black shadow-md">
+                      <View className="flex-row items-center">
+                        <Text className="text-lg font-semibold text-white">
+                          7 days forecast
+                        </Text>
+                        <ChevronRightIcon
+                          size={20}
+                          color="white"
+                          style={{ marginLeft: 8 }}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  </Link>
                 </View>
               </View>
               {/* Wind information */}
