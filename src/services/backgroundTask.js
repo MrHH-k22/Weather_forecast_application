@@ -41,7 +41,7 @@ export const startBackgroundTask = async () => {
       stopOnTerminate: false, // Tiếp tục hoạt động khi app đóng
       startOnBoot: true, // Khởi động khi thiết bị bật lên
     });
-    console.log("Background task registered successfully");
+    //console.log("Background task registered successfully");
   } catch (error) {
     console.log("Error registering background task:", error);
   }
@@ -56,7 +56,7 @@ export const stopBackgroundTask = async () => {
     );
     if (isRegistered) {
       await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
-      console.log("Background task unregistered successfully");
+      //console.log("Background task unregistered successfully");
     } else {
       console.log("Background task was not registered");
     }
