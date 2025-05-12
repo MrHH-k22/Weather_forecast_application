@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
-
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   CalendarDaysIcon,
   MagnifyingGlassIcon,
@@ -102,7 +102,14 @@ export default function Index() {
   const [locations, setLocations] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [weather, setWeather] = useState(null);
+  const params = useLocalSearchParams();
+  const cityNameParam = params.cityName;
 
+  useEffect(() => {
+    if (cityNameParam && cityName !== cityNameParam) {
+      setCityName(cityNameParam);
+    }
+  }, [cityNameParam, cityName]);
   const {
     weatherForecastData,
     isWeatherForecastLoading,
@@ -208,7 +215,7 @@ export default function Index() {
       };
     });
 
-  console.log("dailyForecast", dailyForecast);
+  // console.log("dailyForecast", dailyForecast);
 
   // --------------- Fetch Wind information data ------------------
 
