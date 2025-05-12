@@ -25,7 +25,7 @@ const apiCall = async (endpoint) => {
 
 export const featchWeatherForecast = async (cityName, days) => {
   let forecastUrl = forecastEndpoint({ cityName, days });
-  // console.log("forecastUrl", forecastUrl);
+  console.log("forecastUrl", forecastUrl);
   return apiCall(forecastUrl);
 };
 
