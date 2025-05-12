@@ -96,6 +96,7 @@ function SearchBar({ onSearchStateChange, onLocationSelect }) {
             borderRadius: 24,
             backgroundColor: "#e5e7eb", // bg-gray-300
           }}
+          className="mt-3"
         >
           {locations.map((loc, index) => {
             let showBorder = index + 1 != locations.length;
