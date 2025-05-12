@@ -13,10 +13,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
-import {
-  CalendarDaysIcon,
-  MagnifyingGlassIcon,
-} from "react-native-heroicons/outline";
 
 import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
@@ -736,7 +732,6 @@ export default function Index() {
                   </Text>
                 </View>
               </View>
-              {/* Other info */}
               {/* Other info */}
               <View className="mb-4 space-y-3">
                 <View className="flex-row items-center gap-1 mx-5 mb-4 space-x-2">
