@@ -14,8 +14,8 @@ export const scheduleWeatherNotification = async (weather) => {
         priority: "high",
       },
       trigger: {
-        seconds: 3600,
-        repeats: true,
+        seconds: 1,
+        repeats: false,
       },
     });
   } catch (error) {

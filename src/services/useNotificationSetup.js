@@ -6,7 +6,7 @@ export const useNotificationSetup = () => {
   useEffect(() => {
     const setupNotifications = async () => {
       // Request permissions (required for iOS)
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === "ios") {
         const { status } = await Notifications.requestPermissionsAsync();
         if (status !== "granted") {
           alert("Please enable notifications to get weather updates!");
