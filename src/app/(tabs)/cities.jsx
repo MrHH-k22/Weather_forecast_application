@@ -1,4 +1,13 @@
-import { View, Image, StatusBar, Text, TextInput, Platform, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Image,
+  StatusBar,
+  Text,
+  TextInput,
+  Platform,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import {
@@ -8,81 +17,85 @@ import {
   TrashIcon,
 } from "react-native-heroicons/outline";
 import { Link, useRouter } from "expo-router";
+import { Search } from "lucide-react";
+import SearchBar from "../../components/SearchBar";
 
 function Cities() {
   const router = useRouter();
   const [weatherData, setWeatherData] = useState([
     {
       id: 1,
-      location: 'Biên Hòa',
+      location: "Biên Hòa",
       city: null,
       temperature: 28,
-      condition: 'Mưa nhỏ',
+      condition: "Mưa nhỏ",
       high: 32,
       low: 26,
       time: null,
-      bgColor: 'bg-slate-500',
+      bgColor: "bg-slate-500",
       selected: false,
     },
     {
       id: 2,
-      location: 'Thủ Đức',
+      location: "Thủ Đức",
       city: null,
       temperature: 29,
-      condition: 'Mưa',
+      condition: "Mưa",
       high: 32,
       low: 26,
       time: null,
-      bgColor: 'bg-slate-500',
+      bgColor: "bg-slate-500",
       selected: false,
     },
     {
       id: 3,
-      location: 'Singapore, Singapore',
+      location: "Singapore, Singapore",
       city: null,
       temperature: 27,
-      condition: 'Nhiều mây',
+      condition: "Nhiều mây",
       high: 28,
       low: 19,
       time: null,
-      bgColor: 'bg-indigo-500',
+      bgColor: "bg-indigo-500",
       selected: false,
     },
     {
       id: 4,
-      location: 'London, United Kingdom',
+      location: "London, United Kingdom",
       city: null,
       temperature: 6,
-      condition: 'Quang',
+      condition: "Quang",
       high: 19,
       low: 5,
       time: null,
-      bgColor: 'bg-blue-500',
+      bgColor: "bg-blue-500",
       selected: false,
-    }
+    },
   ]);
 
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   const toggleSelection = (id) => {
-    const updatedData = weatherData.map(item =>
+    const updatedData = weatherData.map((item) =>
       item.id === id ? { ...item, selected: !item.selected } : item
     );
     setWeatherData(updatedData);
 
     // Update selected items
-    const selectedId = updatedData.find(item => item.id === id).selected ? id : null;
+    const selectedId = updatedData.find((item) => item.id === id).selected
+      ? id
+      : null;
     if (selectedId) {
-      setSelectedItems([...selectedItems.filter(i => i !== id), id]);
+      setSelectedItems([...selectedItems.filter((i) => i !== id), id]);
     } else {
-      setSelectedItems(selectedItems.filter(i => i !== id));
+      setSelectedItems(selectedItems.filter((i) => i !== id));
     }
   };
 
   const deleteSelected = () => {
-    const filteredData = weatherData.filter(item => !item.selected);
+    const filteredData = weatherData.filter((item) => !item.selected);
     setWeatherData(filteredData);
     setSelectedItems([]);
     setIsSelectionMode(false);
@@ -93,7 +106,7 @@ function Cities() {
   };
 
   const cancelSelection = () => {
-    const resetData = weatherData.map(item => ({ ...item, selected: false }));
+    const resetData = weatherData.map((item) => ({ ...item, selected: false }));
     setWeatherData(resetData);
     setSelectedItems([]);
     setIsSelectionMode(false);
@@ -103,12 +116,30 @@ function Cities() {
     if (!isSelectionMode) {
       router.push({
         pathname: "/",
-        params: { cityName }
+        params: { cityName },
       });
     }
   };
 
-  const selectedCount = weatherData.filter(item => item.selected).length;
+  const selectedCount = weatherData.filter((item) => item.selected).length;
+
+  // Thêm các hàm mới để xử lý trạng thái tìm kiếm
+  const handleSearchStateChange = (isActive) => {
+    setIsSearchActive(isActive);
+
+    // Nếu người dùng bắt đầu tìm kiếm, thoát khỏi chế độ chọn
+    if (isActive && isSelectionMode) {
+      cancelSelection();
+    }
+  };
+
+  const handleLocationSelect = (location) => {
+    // Điều hướng đến vị trí đã chọn
+    navigateToHome(location.name);
+
+    // Xóa trạng thái tìm kiếm
+    setIsSearchActive(false);
+  };
 
   return (
     <View className="relative flex-1">
@@ -122,84 +153,109 @@ function Cities() {
         source={require("../../../assets/images/bg.png")}
         className="absolute top-0 left-0 w-full h-full"
       />
-      <SafeAreaView className="flex flex-1 px-4"
-        style={{ paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}
-        edges={['right', 'bottom', 'left']}
+      <SafeAreaView
+        className="flex flex-1 px-4"
+        style={{
+          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+        }}
+        edges={["right", "bottom", "left"]}
       >
         {isSelectionMode ? (
-          <View className="flex-row justify-between items-center mt-4">
+          <View className="flex-row items-center justify-between mt-4">
             <TouchableOpacity onPress={cancelSelection}>
               <XMarkIcon color="white" size={24} />
             </TouchableOpacity>
-            <Text className="text-white text-lg font-medium">{selectedCount} mục đã chọn</Text>
+            <Text className="text-lg font-medium text-white">
+              {selectedCount} mục đã chọn
+            </Text>
             <View style={{ width: 24 }} />
           </View>
         ) : (
           <View className="relative z-50 mt-4">
-            <Text className="text-white text-3xl font-bold">Cities</Text>
-            <View className="flex-row items-center px-2 mt-4 rounded-full bg-slate-500 h-14">
-              <TextInput
-                placeholder="Search city"
-                placeholderTextColor={"lightgray"}
-                className="flex-1 p-3 text-white"
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-              <TouchableOpacity className="p-3 rounded-full bg-slate-600">
-                <MagnifyingGlassIcon color="white" size={20} />
-              </TouchableOpacity>
-            </View>
+            <Text className="text-3xl font-bold text-white">Cities</Text>
+            <SearchBar
+              onSearchStateChange={handleSearchStateChange}
+              onLocationSelect={handleLocationSelect}
+            />
           </View>
         )}
 
-        <ScrollView className="mt-5 flex-1" showsVerticalScrollIndicator={false}>
-          {weatherData.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              onPress={() => isSelectionMode ? toggleSelection(item.id) : navigateToHome(item.location)}
-              onLongPress={handleLongPress}
-              activeOpacity={0.8}
-            >
-              <View className={`${item.bgColor} rounded-3xl mb-4 p-4 ${item.selected ? 'border-2 border-white' : ''}`}>
-                <View className="flex-row justify-between items-start">
-                  <View>
-                    <Text className="text-white text-lg font-semibold">{item.location}</Text>
-                    {item.city && (
-                      <Text className="text-white text-sm">{item.city}</Text>
-                    )}
-                    {item.condition && (
-                      <Text className="text-white text-sm">{item.condition}</Text>
-                    )}
+        {/* Chỉ hiển thị danh sách thành phố khi không tìm kiếm */}
+        {!isSearchActive && (
+          <ScrollView
+            className="flex-1 mt-5"
+            showsVerticalScrollIndicator={false}
+          >
+            {weatherData.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                onPress={() =>
+                  isSelectionMode
+                    ? toggleSelection(item.id)
+                    : navigateToHome(item.location)
+                }
+                onLongPress={handleLongPress}
+                activeOpacity={0.8}
+              >
+                <View
+                  className={`${item.bgColor} rounded-3xl mb-4 p-4 ${
+                    item.selected ? "border-2 border-white" : ""
+                  }`}
+                >
+                  <View className="flex-row items-start justify-between">
+                    <View>
+                      <Text className="text-lg font-semibold text-white">
+                        {item.location}
+                      </Text>
+                      {item.city && (
+                        <Text className="text-sm text-white">{item.city}</Text>
+                      )}
+                      {item.condition && (
+                        <Text className="text-sm text-white">
+                          {item.condition}
+                        </Text>
+                      )}
+                    </View>
+                    <View className="flex-row items-center">
+                      <Text className="text-5xl font-light text-white">
+                        {item.temperature}°
+                      </Text>
+                      {isSelectionMode && (
+                        <View
+                          className={`w-6 h-6 rounded-full mr-2 items-center justify-center ${
+                            item.selected
+                              ? "bg-blue-500"
+                              : "bg-white bg-opacity-30"
+                          }`}
+                        >
+                          {item.selected && (
+                            <CheckIcon color="white" size={16} />
+                          )}
+                        </View>
+                      )}
+                    </View>
                   </View>
-                  <View className="flex-row items-center">
-                    <Text className="text-white text-5xl font-light">{item.temperature}°</Text>
-                    {isSelectionMode && (
-                      <View className={`w-6 h-6 rounded-full mr-2 items-center justify-center ${item.selected ? 'bg-blue-500' : 'bg-white bg-opacity-30'}`}>
-                        {item.selected && <CheckIcon color="white" size={16} />}
-                      </View>
-                    )}
+                  <View className="flex-row items-start justify-between mt-1">
+                    <Text className="text-white">{item.condition}</Text>
+                    <View className="flex-row items-center justify-end flex-1">
+                      <Text className="text-white">H:{item.high}° </Text>
+                      <Text className="text-white">L:{item.low}°</Text>
+                    </View>
                   </View>
                 </View>
-                <View className="flex-row mt-1 justify-between items-start">
-                  <Text className="text-white">{item.condition}</Text>
-                  <View className="flex-1 flex-row justify-end items-center">
-                    <Text className="text-white">H:{item.high}° </Text>
-                    <Text className="text-white">L:{item.low}°</Text>
-                  </View>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
 
-        {isSelectionMode && selectedCount > 0 && (
+        {isSelectionMode && selectedCount > 0 && !isSearchActive && (
           <View className="py-4">
             <TouchableOpacity
-              className="py-4 rounded-full items-center"
+              className="items-center py-4 rounded-full"
               onPress={deleteSelected}
             >
               <TrashIcon color="white" size={24} />
-              <Text className="text-white font-medium text-lg">Xóa</Text>
+              <Text className="text-lg font-medium text-white">Xóa</Text>
             </TouchableOpacity>
           </View>
         )}
