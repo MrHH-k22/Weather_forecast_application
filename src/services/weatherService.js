@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_KEY = "5435e177b2c447248e963352251105";
+const API_KEY = "3a94329948ef4e50b0580059251105";
 
 const forecastEndpoint = (params) =>
   `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${params.cityName}&days=${params.days}&aqi=yes&alerts=no`;

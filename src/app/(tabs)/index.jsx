@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   CalendarDaysIcon,
@@ -22,7 +23,6 @@ import * as Progress from "react-native-progress";
 // local imports
 import { weatherImages } from "../../../constants/index";
 import { weatherBackgroundImages } from "../../../constants/index";
-import FadeInView from "../../components/FadeInView";
 import { useFetchWeatherForecast } from "../../hooks/useFetchWeatherForecast";
 import { useFetchWeatherLocation } from "../../hooks/useFetchWeatherLocation";
 
@@ -34,6 +34,10 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 //Notification Services
 import { scheduleWeatherNotification } from "../../services/scheduleWeatherNotification";
 import { useNotificationSetup } from "../../services/useNotificationSetup";
+import {
+  startBackgroundTask,
+  stopBackgroundTask,
+} from "../../services/backgroundTask";
 
 // Trong component của bạn
 <MaterialCommunityIcons name="gauge" size={30} color="#007AFF" />;
@@ -129,6 +133,9 @@ export default function Index() {
     setLocations([]);
     setCityName(loc.name);
     setShowSearch(false);
+
+    // Lưu thành phố đã chọn để background task có thể sử dụng
+    AsyncStorage.setItem("lastCity", loc.name);
   }
 
   function handleSearch(value) {
@@ -212,7 +219,7 @@ export default function Index() {
       };
     });
 
-  console.log("dailyForecast", dailyForecast);
+  //console.log("dailyForecast", dailyForecast);
 
   // --------------- Fetch Wind information data ------------------
 
@@ -275,14 +282,28 @@ export default function Index() {
   // Notification setup
   useNotificationSetup();
   useEffect(() => {
-    const setupNotification = async () => {
-      if (weather) {
-        scheduleWeatherNotification(weather);
-      }
-    };
-    setupNotification();
-  }, [weather]);
+    // Lần đầu tiên mở app
+    const hasShownInitialNotification = async () => {
+      const hasShown = await AsyncStorage.getItem("initialNotificationShown");
+      if (!weather) return;
 
+      if (!hasShown) {
+        // Chỉ hiển thị thông báo và lưu trạng thái nếu chưa hiển thị
+        scheduleWeatherNotification(weather);
+        await AsyncStorage.setItem("initialNotificationShown", "true");
+      }
+
+      // Đảm bảo background task được đăng ký (vẫn giữ lại)
+      startBackgroundTask();
+    };
+
+    hasShownInitialNotification();
+
+    return () => {
+      // Dọn dẹp khi component unmount
+      stopBackgroundTask();
+    };
+  }, [weather]);
   return (
     <View className="flex-1">
       {/* <StatusBar
