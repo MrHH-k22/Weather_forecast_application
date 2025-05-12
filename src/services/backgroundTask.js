@@ -14,11 +14,23 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
     const cityName = (await AsyncStorage.getItem("lastCity")) || "singapore";
     const weatherData = await featchWeatherForecast(cityName, "1");
 
+    // Lấy đơn vị nhiệt độ đã lưu
+    const tempUnit =
+      (await AsyncStorage.getItem("temperatureUnit")) || "celsius";
+
     if (weatherData) {
+      // Hiển thị nhiệt độ phù hợp với cài đặt đơn vị
+      const temperature =
+        tempUnit === "celsius"
+          ? Math.round(weatherData.current.temp_c)
+          : Math.round((weatherData.current.temp_c * 9) / 5 + 32);
+
+      const tempUnitSymbol = tempUnit === "celsius" ? "°C" : "°F";
+
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Cập nhật thời tiết",
-          body: `Hiện tại ${weatherData.current.temp_c}°C với ${weatherData.current.condition.text} tại ${weatherData.location.name}`,
+          body: `Current weather is ${temperature}${tempUnitSymbol} with ${weatherData.current.condition.text} in ${weatherData.location.name}`,
           sound: true,
         },
         trigger: false, // Send immediately
