@@ -21,7 +21,6 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="cities/[id]" options={{ headerShown: false }} />
         <Stack.Screen
           name="charts/HoursDetails"
           options={{
@@ -51,6 +50,9 @@ export default function RootLayout() {
             title: "Days forecast", // Tiêu đề phù hợp với ứng dụng của bạn
             // Hoặc bạn có thể customize thêm headerTitle
           }}
+        />
+        <Stack.Screen 
+          name="cities/AddCityPage"
         />
       </Stack>
     </QueryClientProvider>

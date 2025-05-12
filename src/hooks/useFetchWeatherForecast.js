@@ -3,6 +3,7 @@ import { featchWeatherForecast } from "../services/weatherService";
 
 export function useFetchWeatherForecast(params) {
   const { cityName, days } = params;
+  console.log("cityName", cityName);
   const {
     data: weatherForecastData,
     isLoading: isWeatherForecastLoading,

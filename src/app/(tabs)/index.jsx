@@ -115,7 +115,7 @@ export default function Index() {
   const [weather, setWeather] = useState(null);
   const params = useLocalSearchParams();
   const cityNameParam = params.cityName;
-
+  console.log("City Name Param:", cityNameParam);
   useEffect(() => {
     if (cityNameParam && cityName !== cityNameParam) {
       setCityName(cityNameParam);

@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MagnifyingGlassIcon,
   CheckIcon,
@@ -17,8 +17,9 @@ import {
   TrashIcon,
 } from "react-native-heroicons/outline";
 import { Link, useRouter } from "expo-router";
-import { Search } from "lucide-react";
 import SearchBar from "../../components/SearchBar";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 function Cities() {
   const router = useRouter();
@@ -49,7 +50,7 @@ function Cities() {
     },
     {
       id: 3,
-      location: "Singapore, Singapore",
+      location: "Singapore",
       city: null,
       temperature: 27,
       condition: "Nhiều mây",
@@ -61,7 +62,7 @@ function Cities() {
     },
     {
       id: 4,
-      location: "London, United Kingdom",
+      location: "London",
       city: null,
       temperature: 6,
       condition: "Quang",
@@ -72,7 +73,28 @@ function Cities() {
       selected: false,
     },
   ]);
+  const [favorites, setFavorites] = useState([]);
 
+  const fetchFavorites = async () => {
+    try {
+      const favorites = await AsyncStorage.getItem('favorites');
+      if (favorites !== null) {
+        setFavorites(JSON.parse(favorites));  // Update state with the fetched favorites
+      } else {
+        setFavorites([]);  // If no favorites, set as empty array
+      }
+    } catch (error) {
+      console.log('Error retrieving favorites from AsyncStorage:', error);
+    }
+  };
+
+  // useFocusEffect will trigger the fetchFavorites function every time this screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchFavorites();  // Fetch favorites when the screen is focused
+    }, [])  // Empty dependency array means it runs on every screen focus
+  );
+  console.log("favorites", favorites);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -132,13 +154,21 @@ function Cities() {
       cancelSelection();
     }
   };
-
-  const handleLocationSelect = (location) => {
-    // Điều hướng đến vị trí đã chọn
-    navigateToHome(location.name);
-
-    // Xóa trạng thái tìm kiếm
+  const nagivteToAddCity = (cityName, countryName) => {
+    if (cityName) {
+      router.push({
+        pathname: "/cities/AddCityPage",
+        params: { cityName, countryName },
+      });
+    }
     setIsSearchActive(false);
+  };
+  const handleLocationSelect = (location) => {
+    setIsSearchActive(false);
+    // const passLocation = location.name + ", " + location.country;
+    const cityName = location.name;
+    const countryName = location.country;
+    nagivteToAddCity(cityName, countryName);
   };
 
   return (
