@@ -1,21 +1,16 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Stack, useNavigation } from "expo-router";
 import { ChevronRightIcon } from "react-native-heroicons/outline";
 import { useUnitsContext } from "../../context/UnitsContext";
 
 export default function Settings() {
   const navigation = useNavigation();
-  const { units } = useUnitsContext();
+  const { temperatureUnit, windSpeedUnit, precipitationUnit } =
+    useUnitsContext();
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#1c2732]">
       <Stack.Screen
         options={{
           headerStyle: {
@@ -26,19 +21,24 @@ export default function Settings() {
         }}
       />
 
-      <ScrollView>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Unit Settings</Text>
+      <ScrollView className="mt-3">
+        <View className="p-4 border-b border-[#374151]">
           <TouchableOpacity
-            style={styles.menuItem}
+            className="flex-row items-center justify-between py-3"
             onPress={() => navigation.navigate("settings/units")}
           >
             <View>
-              <Text style={styles.menuTitle}>Units</Text>
-              <Text style={styles.menuDescription}>
-                {units === "metric"
+              <Text className="text-lg text-white mb-1">Units</Text>
+              <Text className="text-sm text-[#9ca3af]">
+                {temperatureUnit === "celsius" &&
+                windSpeedUnit === "kmh" &&
+                precipitationUnit === "mm"
                   ? "Metric (°C, km/h, mm)"
-                  : "Imperial (°F, mph, in)"}
+                  : temperatureUnit === "fahrenheit" &&
+                    windSpeedUnit === "mph" &&
+                    precipitationUnit === "in"
+                  ? "Imperial (°F, mph, in)"
+                  : "Custom"}
               </Text>
             </View>
             <ChevronRightIcon size={20} color="#fff" />
@@ -50,35 +50,3 @@ export default function Settings() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#1c2732",
-  },
-  section: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#374151",
-  },
-  sectionTitle: {
-    fontSize: 16,
-    color: "#9ca3af",
-    marginBottom: 16,
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-  },
-  menuTitle: {
-    fontSize: 18,
-    color: "#fff",
-    marginBottom: 4,
-  },
-  menuDescription: {
-    fontSize: 14,
-    color: "#9ca3af",
-  },
-});
