@@ -489,7 +489,7 @@ export default function Index() {
                 <View className="mx-5 mt-4">
                   <Link
                     href={{
-                      pathname: `/charts/HourDetails`,
+                      pathname: `/charts/HoursDetails`,
                       params: {
                         todayForecast: JSON.stringify(todayForecast),
                         location: JSON.stringify(location),
@@ -497,7 +497,7 @@ export default function Index() {
                     }}
                     asChild
                   >
-                    <TouchableOpacity className="w-full py-4 rounded-3xl bg-[#2a6eb6] flex items-center justify-center shadow-black shadow-md">
+                    <TouchableOpacity className="flex items-center justify-center w-full py-4 bg-teal-500 shadow-md rounded-3xl shadow-black">
                       <View className="flex-row items-center">
                         <Text className="text-lg font-semibold text-white">
                           24 Hours forecast
@@ -525,7 +525,7 @@ export default function Index() {
                     {dailyForecast?.map((item, index) => (
                       <View
                         key={index}
-                        className="flex flex-row items-center justify-between py-4 border-b border-blue-400"
+                        className="flex flex-row items-center justify-between py-4 border-b border-gray-400"
                         style={{ alignItems: "center" }}
                       >
                         {/* Ngày */}
@@ -554,7 +554,7 @@ export default function Index() {
 
                         {/* Thanh khoảng nhiệt độ */}
                         <View
-                          className="relative h-1 mx-4 overflow-hidden bg-blue-400 rounded-full"
+                          className="relative h-1 mx-4 overflow-hidden bg-teal-500 rounded-full"
                           style={{ width: 120 }}
                         >
                           <View
@@ -581,15 +581,17 @@ export default function Index() {
                 <View className="mx-5 mt-4">
                   <Link
                     href={{
-                      pathname: `/charts/HourDetails`,
+                      pathname: `/charts/DaysDetails`,
                       params: {
-                        todayForecast: JSON.stringify(todayForecast),
+                        daysForecast: JSON.stringify(
+                          weather?.forecast?.forecastday
+                        ),
                         location: JSON.stringify(location),
                       },
                     }}
                     asChild
                   >
-                    <TouchableOpacity className="w-full py-4 rounded-3xl bg-[#2a6eb6] flex items-center justify-center shadow-black shadow-md">
+                    <TouchableOpacity className="flex items-center justify-center w-full py-4 bg-teal-500 shadow-md rounded-3xl shadow-black">
                       <View className="flex-row items-center">
                         <Text className="text-lg font-semibold text-white">
                           7 days forecast
@@ -613,40 +615,66 @@ export default function Index() {
                   </Text>
                 </View>
                 <View className="flex flex-row flex-wrap justify-between mx-5">
-                  <View className="p-6 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col justify-between items-center">
-                    <Image
-                      source={require("../../../assets/icons/pinwheel.png")}
-                      className="w-20 h-20"
-                      resizeMode="cover"
-                    />
-                    <Text className="text-lg text-center text-white">
-                      Wind speed
-                    </Text>
-                    <Text className="text-xl font-semibold text-center text-white">
-                      {windSpeed} kph
-                    </Text>
-                  </View>
-                  <View className="p-6 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col justify-between items-center">
-                    <Image
-                      source={require("../../../assets/icons/compass.png")}
-                      className="w-20 h-20"
-                      resizeMode="cover"
-                    />
-                    <Text className="text-lg text-center text-white">
-                      Wind direction
-                    </Text>
-                    <Text className="text-xl font-semibold text-center text-white">
-                      {windDirText}, {windDirDegree}&deg;
-                    </Text>
-                  </View>
+                  {/* Wind speed */}
+                  <Link
+                    href={{
+                      pathname: `/charts/DaysDetails`,
+                      params: {
+                        daysForecast: JSON.stringify(
+                          weather?.forecast?.forecastday
+                        ),
+                        location: JSON.stringify(location),
+                        tab: "Wind speed",
+                      },
+                    }}
+                    asChild
+                  >
+                    <TouchableOpacity className="p-6 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col justify-between items-center">
+                      <Image
+                        source={require("../../../assets/icons/pinwheel.png")}
+                        className="w-20 h-20"
+                        resizeMode="cover"
+                      />
+                      <Text className="text-lg text-center text-white">
+                        Wind speed
+                      </Text>
+                      <Text className="text-xl font-semibold text-center text-white">
+                        {windSpeed} kph
+                      </Text>
+                    </TouchableOpacity>
+                  </Link>
 
-                  {/* <View className="p-4 bg-black/55 backdrop-blur-smaspect-square rounded-3xl">
-                  <Text className="text-lg font-semibold text-white">
-                    Daily forecast
-                  </Text>
-                </View> */}
+                  {/* Wind direction */}
+                  <Link
+                    href={{
+                      pathname: `/charts/DaysDetails`,
+                      params: {
+                        daysForecast: JSON.stringify(
+                          weather?.forecast?.forecastday
+                        ),
+                        location: JSON.stringify(location),
+                        tab: "Wind speed",
+                      },
+                    }}
+                    asChild
+                  >
+                    <TouchableOpacity className="p-6 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col justify-between items-center">
+                      <Image
+                        source={require("../../../assets/icons/compass.png")}
+                        className="w-20 h-20"
+                        resizeMode="cover"
+                      />
+                      <Text className="text-lg text-center text-white">
+                        Wind direction
+                      </Text>
+                      <Text className="text-xl font-semibold text-center text-white">
+                        {windDirText}, {windDirDegree}&deg;
+                      </Text>
+                    </TouchableOpacity>
+                  </Link>
                 </View>
               </View>
+
               {/* Air Quality */}
               <View className="mb-4 space-y-3">
                 <View className="flex-row items-center gap-1 mx-5 mb-4 space-x-2">
@@ -681,6 +709,7 @@ export default function Index() {
                 </View>
               </View>
               {/* Other info */}
+              {/* Other info */}
               <View className="mb-4 space-y-3">
                 <View className="flex-row items-center gap-1 mx-5 mb-4 space-x-2">
                   <CalendarDaysIcon size="22" color="white" />
@@ -689,48 +718,149 @@ export default function Index() {
                   </Text>
                 </View>
                 <View className="flex flex-row flex-wrap justify-between mx-5">
-                  <View className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col justify-between items-start">
-                    <View className="flex flex-row items-center gap-1">
-                      <SunIcon color="#d1d5db" size={18} />
-                      <Text className="text-lg text-center text-gray-300">
-                        UV Index
+                  {/* UV Index */}
+                  <Link
+                    href={{
+                      pathname: `/charts/DaysDetails`,
+                      params: {
+                        daysForecast: JSON.stringify(
+                          weather?.forecast?.forecastday
+                        ),
+                        location: JSON.stringify(location),
+                        tab: "UV",
+                      },
+                    }}
+                    asChild
+                  >
+                    <TouchableOpacity className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col justify-between items-start">
+                      <View className="flex flex-row items-center gap-1">
+                        <SunIcon color="#d1d5db" size={18} />
+                        <Text className="text-lg text-center text-gray-300">
+                          UV Index
+                        </Text>
+                      </View>
+                      <Text className="text-3xl font-bold text-center text-white">
+                        {uvIndex}
                       </Text>
-                    </View>
-                    <Text className="text-3xl font-bold text-center text-white">
-                      {uvIndex}
-                    </Text>
-                    <Text className="text-3xl font-semibold text-center text-white">
-                      {uvLevel}
-                    </Text>
-                    <View className="w-full">
-                      <Progress.Bar
-                        progress={uvIndex / 10}
-                        width={null}
-                        height={15}
-                        color={uvColor}
-                        borderRadius={20}
-                      />
-                    </View>
-                  </View>
-                  <View className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
-                    <View className="flex flex-row items-center gap-1">
-                      <MaterialCommunityIcons
-                        name="water-percent"
-                        size={18}
-                        color="#d1d5db"
-                      />
-                      <Text className="text-lg text-center text-gray-300">
-                        Humidity
+                      <Text className="text-3xl font-semibold text-center text-white">
+                        {uvLevel}
                       </Text>
-                    </View>
-                    <Text className="text-3xl font-bold text-center text-white">
-                      {humidity}%
-                    </Text>
-                    <Text className="font-semibold text-white text-md">
-                      The dew point is 23.4&#176; right now.
-                    </Text>
-                  </View>
-                  <View className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
+                      <View className="w-full">
+                        <Progress.Bar
+                          progress={uvIndex / 10}
+                          width={null}
+                          height={15}
+                          color={uvColor}
+                          borderRadius={20}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  </Link>
+
+                  {/* Humidity */}
+                  <Link
+                    href={{
+                      pathname: `/charts/DaysDetails`,
+                      params: {
+                        daysForecast: JSON.stringify(
+                          weather?.forecast?.forecastday
+                        ),
+                        location: JSON.stringify(location),
+                        tab: "Humidity",
+                      },
+                    }}
+                    asChild
+                  >
+                    <TouchableOpacity className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
+                      <View className="flex flex-row items-center gap-1">
+                        <MaterialCommunityIcons
+                          name="water-percent"
+                          size={18}
+                          color="#d1d5db"
+                        />
+                        <Text className="text-lg text-center text-gray-300">
+                          Humidity
+                        </Text>
+                      </View>
+                      <Text className="text-3xl font-bold text-center text-white">
+                        {humidity}%
+                      </Text>
+                      <Text className="font-semibold text-white text-md">
+                        The dew point is 23.4&#176; right now.
+                      </Text>
+                    </TouchableOpacity>
+                  </Link>
+
+                  {/* Cloud */}
+                  <Link
+                    href={{
+                      pathname: `/charts/DaysDetails`,
+                      params: {
+                        daysForecast: JSON.stringify(
+                          weather?.forecast?.forecastday
+                        ),
+                        location: JSON.stringify(location),
+                        tab: "Cloud cover",
+                      },
+                    }}
+                    asChild
+                  >
+                    <TouchableOpacity className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
+                      <View className="flex flex-row items-center gap-1">
+                        <MaterialCommunityIcons
+                          name="cloud"
+                          size={18}
+                          color="#d1d5db"
+                        />
+                        <Text className="text-lg text-center text-gray-300">
+                          Cloud
+                        </Text>
+                      </View>
+                      <Text className="text-3xl font-bold text-center text-white">
+                        {cloud}%
+                      </Text>
+                      <Text className="font-semibold text-white text-md">
+                        The dew point is 23.4&#176; right now.
+                      </Text>
+                    </TouchableOpacity>
+                  </Link>
+
+                  {/* Rain level */}
+                  <Link
+                    href={{
+                      pathname: `/charts/DaysDetails`,
+                      params: {
+                        daysForecast: JSON.stringify(
+                          weather?.forecast?.forecastday
+                        ),
+                        location: JSON.stringify(location),
+                        tab: "Rain level",
+                      },
+                    }}
+                    asChild
+                  >
+                    <TouchableOpacity className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
+                      <View className="flex flex-row items-center gap-1">
+                        <MaterialCommunityIcons
+                          name="weather-rainy"
+                          size={18}
+                          color="#d1d5db"
+                        />
+                        <Text className="text-lg text-center text-gray-300">
+                          Rain level
+                        </Text>
+                      </View>
+                      <Text className="text-3xl font-bold text-center text-white">
+                        {rainLevel} mm
+                      </Text>
+                      <Text className="font-semibold text-white text-md">
+                        The dew point is 23.4&#176; right now.
+                      </Text>
+                    </TouchableOpacity>
+                  </Link>
+
+                  {/* Pressure */}
+                  <TouchableOpacity className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
                     <View className="flex flex-row items-center gap-1">
                       <MaterialCommunityIcons
                         name="gauge"
@@ -747,8 +877,10 @@ export default function Index() {
                     <Text className="font-semibold text-white text-md">
                       The dew point is 23.4&#176; right now.
                     </Text>
-                  </View>
-                  <View className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
+                  </TouchableOpacity>
+
+                  {/* Feel likes */}
+                  <TouchableOpacity className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
                     <View className="flex flex-row items-center gap-1">
                       <MaterialCommunityIcons
                         name="thermometer"
@@ -765,50 +897,7 @@ export default function Index() {
                     <Text className="font-semibold text-white text-md">
                       Humidity is making it fell warmer.
                     </Text>
-                  </View>
-                  <View className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
-                    <View className="flex flex-row items-center gap-1">
-                      <MaterialCommunityIcons
-                        name="cloud"
-                        size={18}
-                        color="#d1d5db"
-                      />
-                      <Text className="text-lg text-center text-gray-300">
-                        Cloud
-                      </Text>
-                    </View>
-                    <Text className="text-3xl font-bold text-center text-white">
-                      {cloud}%
-                    </Text>
-                    <Text className="font-semibold text-white text-md">
-                      The dew point is 23.4&#176; right now.
-                    </Text>
-                  </View>
-
-                  <View className="p-4 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[48%] flex flex-col gap-4 justify-between items-start">
-                    <View className="flex flex-row items-center gap-1">
-                      <MaterialCommunityIcons
-                        name="weather-rainy"
-                        size={18}
-                        color="#d1d5db"
-                      />
-                      <Text className="text-lg text-center text-gray-300">
-                        Rain level
-                      </Text>
-                    </View>
-                    <Text className="text-3xl font-bold text-center text-white">
-                      {rainLevel} mm
-                    </Text>
-                    <Text className="font-semibold text-white text-md">
-                      The dew point is 23.4&#176; right now.
-                    </Text>
-                  </View>
-
-                  {/* <View className="p-4 bg-black/55 backdrop-blur-smaspect-square rounded-3xl">
-                  <Text className="text-lg font-semibold text-white">
-                    Daily forecast
-                  </Text>
-                </View> */}
+                  </TouchableOpacity>
                 </View>
               </View>
             </SafeAreaView>

@@ -20,7 +20,7 @@ const WeatherTemperatureChart = () => {
     : null;
   const location = params.location ? JSON.parse(params.location) : null;
 
-  console.log("todayForecast", todayForecast);
+  // console.log("todayForecast", todayForecast);
 
   // Số giờ hiển thị cùng lúc trên màn hình
   const visibleHours = 6;
@@ -37,7 +37,7 @@ const WeatherTemperatureChart = () => {
     {
       id: "Temperature",
       icon: "thermometer",
-      color: "#10B981",
+      color: "#6B7280",
       chartColor: "#FFD700",
       unit: "°",
     },
