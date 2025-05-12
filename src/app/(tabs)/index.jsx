@@ -12,6 +12,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 
+import { useLocalSearchParams, useRouter } from "expo-router";
+import {
+  CalendarDaysIcon,
+  MagnifyingGlassIcon,
+} from "react-native-heroicons/outline";
+
 import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import * as Progress from "react-native-progress";
@@ -107,7 +113,14 @@ export default function Index() {
   const [locations, setLocations] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [weather, setWeather] = useState(null);
+  const params = useLocalSearchParams();
+  const cityNameParam = params.cityName;
 
+  useEffect(() => {
+    if (cityNameParam && cityName !== cityNameParam) {
+      setCityName(cityNameParam);
+    }
+  }, [cityNameParam, cityName]);
   const {
     weatherForecastData,
     isWeatherForecastLoading,
