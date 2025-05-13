@@ -642,13 +642,13 @@ export default function Index() {
                         {/* Ngày */}
                         <Text
                           className="text-xl font-bold text-left text-white"
-                          style={{ width: 48 }}
+                          style={{ width: 45 }}
                         >
                           {item.day}
                         </Text>
 
                         {/* Icon thời tiết */}
-                        <View style={{ width: 32, alignItems: "center" }}>
+                        <View style={{ width: 28, alignItems: "center" }}>
                           <Image
                             source={getWeatherImage(item.icon)}
                             style={{ width: 24, height: 24 }}
@@ -657,7 +657,7 @@ export default function Index() {
 
                         {/* Nhiệt độ thấp */}
                         <Text
-                          className="text-xl text-right text-white"
+                          className="text-base text-right text-white"
                           style={{ width: 36 }}
                         >
                           {displayTemperature(item.lowTemp)}
@@ -666,7 +666,7 @@ export default function Index() {
                         {/* Thanh khoảng nhiệt độ */}
                         <View
                           className="relative h-1 mx-4 overflow-hidden bg-teal-500 rounded-full"
-                          style={{ width: 120 }}
+                          style={{ width: 110 }}
                         >
                           <View
                             className="absolute h-full bg-orange-500 rounded-full"
@@ -680,7 +680,7 @@ export default function Index() {
 
                         {/* Nhiệt độ cao */}
                         <Text
-                          className="text-xl text-right text-white"
+                          className="text-base text-right text-white"
                           style={{ width: 36 }}
                         >
                           {displayTemperature(item.highTemp)}
