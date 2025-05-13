@@ -37,6 +37,7 @@ function AddCityPage() {
 
     const daysForecast = weather?.forecast?.forecastday;
     // console.log("weather", daysForecast);
+    // console.log("daysForecast", daysForecast);
     let dailyData = [];
     if (daysForecast) {
       dailyData = daysForecast.map((day) => ({
