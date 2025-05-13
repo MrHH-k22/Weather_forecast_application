@@ -361,11 +361,14 @@ export default function Index() {
     const hasShownInitialNotification = async () => {
       const hasShown = await AsyncStorage.getItem("initialNotificationShown");
       if (!weather) return;
-
-      if (!hasShown) {
-        // Chỉ hiển thị thông báo và lưu trạng thái nếu chưa hiển thị
-        scheduleWeatherNotification(weather);
-        await AsyncStorage.setItem("initialNotificationShown", "true");
+      if (!hasShown || hasShown === null) {
+        try {
+          // Chỉ hiển thị thông báo và lưu trạng thái nếu chưa hiển thị
+          await scheduleWeatherNotification(weather);
+          await AsyncStorage.setItem("initialNotificationShown", "true");
+        } catch (error) {
+          console.error("Error scheduling notification:", error);
+        }
       }
 
       // Đảm bảo background task được đăng ký (vẫn giữ lại)
