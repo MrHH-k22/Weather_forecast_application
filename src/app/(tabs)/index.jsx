@@ -42,8 +42,7 @@ import {
   stopBackgroundTask,
 } from "../../services/backgroundTask";
 
-// Trong component của bạn
-<MaterialCommunityIcons name="gauge" size={30} color="#007AFF" />;
+import { useUnitsContext } from "../../context/UnitsContext";
 
 const airQualityLevels = [
   {
@@ -113,9 +112,46 @@ export default function Index() {
   const [locations, setLocations] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [weather, setWeather] = useState(null);
+  const [units, setUnits] = useState("metric"); // Thêm state cho đơn vị đo
   const params = useLocalSearchParams();
   const cityNameParam = params.cityName;
-  console.log("City Name Param:", cityNameParam);
+  const router = useRouter(); // Đảm bảo có useRouter được import
+
+  const {
+    convertTemperature,
+    convertWindSpeed,
+    convertPrecipitation,
+    getTemperatureUnit,
+    getWindSpeedUnit,
+    getPrecipitationUnit,
+  } = useUnitsContext();
+
+  // Thay đổi cách hiển thị nhiệt độ
+  const displayTemperature = (temp) => {
+    if (temp === undefined || temp === null) {
+      return `0${getTemperatureUnit()}`;
+    }
+    return `${Math.round(convertTemperature(temp))}${getTemperatureUnit()}`;
+  };
+
+  // Đối với tốc độ gió
+  const displayWindSpeed = (speed) => {
+    if (speed === undefined || speed === null) {
+      return `0 ${getWindSpeedUnit()}`;
+    }
+    return `${Math.round(convertWindSpeed(speed))} ${getWindSpeedUnit()}`;
+  };
+
+  // Đối với lượng mưa - hiển thị với 3 chữ số thập phân
+  const displayPrecipitation = (precip) => {
+    if (precip === undefined || precip === null) {
+      return `0.000 ${getPrecipitationUnit()}`;
+    }
+    return `${convertPrecipitation(precip, 3).toFixed(
+      3
+    )} ${getPrecipitationUnit()}`;
+  };
+
   useEffect(() => {
     if (cityNameParam && cityName !== cityNameParam) {
       setCityName(cityNameParam);
@@ -135,6 +171,35 @@ export default function Index() {
     cityName: searchCity,
     enabled: !!searchCity && searchCity.length > 2, // chỉ fetch khi có searchCity đủ dài
   });
+
+  // Tải đơn vị đo từ AsyncStorage khi component mount
+  useEffect(() => {
+    const loadUnits = async () => {
+      try {
+        const savedUnits = await AsyncStorage.getItem("units");
+        if (savedUnits) {
+          setUnits(savedUnits);
+        }
+      } catch (error) {
+        console.error("Error loading units:", error);
+      }
+    };
+
+    loadUnits();
+  }, []);
+
+  // Lưu đơn vị đo vào AsyncStorage khi thay đổi
+  useEffect(() => {
+    const saveUnits = async () => {
+      try {
+        await AsyncStorage.setItem("units", units);
+      } catch (error) {
+        console.error("Error saving units:", error);
+      }
+    };
+
+    saveUnits();
+  }, [units]);
 
   // khi có dữ liệu từ API, set lại giá trị cho weather
 
@@ -434,7 +499,7 @@ export default function Index() {
                 {/* Degree celcius */}
                 <View className="space-y-2">
                   <Text className="ml-5 text-6xl font-bold text-center text-white">
-                    {current?.temp_c}&#176;
+                    {displayTemperature(current?.temp_c)}
                   </Text>
                   <Text className="text-xl tracking-widest text-center text-white">
                     {current?.condition?.text}
@@ -449,7 +514,8 @@ export default function Index() {
                     />
                     <Text className="font-semibold text-white textbase">
                       {" "}
-                      {current?.wind_kph}
+                      {Math.round(convertWindSpeed(windSpeed))}{" "}
+                      {getWindSpeedUnit()}
                     </Text>
                   </View>
                   <View className="flex flex-row items-center space-x-2">
@@ -459,7 +525,7 @@ export default function Index() {
                     />
                     <Text className="font-semibold text-white textbase">
                       {" "}
-                      {current?.humidity}
+                      {humidity}
                     </Text>
                   </View>
                   <View className="flex flex-row items-center space-x-2">
@@ -525,7 +591,7 @@ export default function Index() {
 
                         <Text className="text-white">{hourLabel}</Text>
                         <Text className="text-2xl font-semibold text-white">
-                          {item.temp_c}&#176;
+                          {displayTemperature(item.temp_c)}
                         </Text>
                       </View>
                     );
@@ -594,7 +660,7 @@ export default function Index() {
                           className="text-xl text-right text-white"
                           style={{ width: 36 }}
                         >
-                          {item.lowTemp}°
+                          {displayTemperature(item.lowTemp)}
                         </Text>
 
                         {/* Thanh khoảng nhiệt độ */}
@@ -617,7 +683,7 @@ export default function Index() {
                           className="text-xl text-right text-white"
                           style={{ width: 36 }}
                         >
-                          {item.highTemp}°
+                          {displayTemperature(item.highTemp)}
                         </Text>
                       </View>
                     ))}
@@ -684,7 +750,8 @@ export default function Index() {
                         Wind speed
                       </Text>
                       <Text className="text-xl font-semibold text-center text-white">
-                        {windSpeed} kph
+                        {Math.round(convertWindSpeed(windSpeed))}{" "}
+                        {getWindSpeedUnit()}
                       </Text>
                     </TouchableOpacity>
                   </Link>
@@ -895,7 +962,7 @@ export default function Index() {
                         </Text>
                       </View>
                       <Text className="text-3xl font-bold text-center text-white">
-                        {rainLevel} mm
+                        {displayPrecipitation(rainLevel)}
                       </Text>
                       <Text className="font-semibold text-white text-md">
                         The dew point is 23.4&#176; right now.
@@ -936,7 +1003,7 @@ export default function Index() {
                       </Text>
                     </View>
                     <Text className="text-3xl font-bold text-center text-white">
-                      {feelLikes}&#176; C
+                      {displayTemperature(feelLikes)}
                     </Text>
                     <Text className="font-semibold text-white text-md">
                       Humidity is making it fell warmer.

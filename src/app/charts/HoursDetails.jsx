@@ -11,6 +11,7 @@ import Feather from "react-native-vector-icons/Feather";
 import { format } from "date-fns";
 import { useLocalSearchParams } from "expo-router";
 import { getMaxValueForTab, getMinValueForTab } from "../../utils/helper";
+import { useUnitsContext } from "../../context/UnitsContext";
 
 const WeatherTemperatureChart = () => {
   // Lấy todayForecast từ params URL
@@ -32,6 +33,16 @@ const WeatherTemperatureChart = () => {
   const totalChartWidth = hourWidth * 24;
 
   // Các tab tùy chọn cho biểu đồ với màu sắc và đơn vị tương ứng
+  const {
+    convertTemperature,
+    convertWindSpeed,
+    convertPrecipitation,
+    getTemperatureUnit,
+    getWindSpeedUnit,
+    getPrecipitationUnit,
+    units,
+  } = useUnitsContext();
+
   const [selectedTab, setSelectedTab] = useState("Temperature");
   const tabs = [
     {
@@ -39,14 +50,14 @@ const WeatherTemperatureChart = () => {
       icon: "thermometer",
       color: "#6B7280",
       chartColor: "#FFD700",
-      unit: "°",
+      unit: getTemperatureUnit(),
     },
     {
       id: "Rain/Snow",
       icon: "cloud-rain",
       color: "#6B7280",
       chartColor: "#3B82F6",
-      unit: "mm",
+      unit: getPrecipitationUnit(),
     },
     {
       id: "UV",
@@ -60,7 +71,7 @@ const WeatherTemperatureChart = () => {
       icon: "wind",
       color: "#6B7280",
       chartColor: "#64748B",
-      unit: "km/h",
+      unit: getWindSpeedUnit(),
     },
     {
       id: "Humidity",
@@ -74,7 +85,7 @@ const WeatherTemperatureChart = () => {
       icon: "thermometer",
       color: "#6B7280",
       chartColor: "#8B5CF6",
-      unit: "°",
+      unit: getTemperatureUnit(),
     },
     {
       id: "Cloud cover",
@@ -100,27 +111,33 @@ const WeatherTemperatureChart = () => {
     setSelectedTab(tabId);
   };
 
-  // Lấy dữ liệu tương ứng với tab được chọn
+  // Chỉnh sửa hàm getTabData
   const getTabData = (hourData, tabId) => {
     switch (tabId) {
       case "Temperature":
-        return Math.round(hourData.temp_c);
+        return Math.round(convertTemperature(hourData.temp_c));
       case "Rain/Snow":
-        return hourData.snow_cm > 0 ? hourData.snow_cm : hourData.precip_mm;
+        // Làm tròn đến 3 chữ số thập phân cho lượng mưa
+        return Number(
+          convertPrecipitation(
+            hourData.snow_cm > 0 ? hourData.snow_cm : hourData.precip_mm
+          ).toFixed(3)
+        );
       case "UV":
         return hourData.uv;
+      // Các trường hợp khác không thay đổi
       case "Wind speed":
-        return Math.round(hourData.wind_kph);
+        return Math.round(convertWindSpeed(hourData.wind_kph));
       case "Humidity":
         return hourData.humidity;
       case "Dew point":
-        return Math.round(hourData.dewpoint_c);
+        return Math.round(convertTemperature(hourData.dewpoint_c));
       case "Cloud cover":
         return hourData.cloud;
       case "Pressure":
         return Math.round(hourData.pressure_mb);
       default:
-        return Math.round(hourData.temp_c);
+        return Math.round(convertTemperature(hourData.temp_c));
     }
   };
 
@@ -180,7 +197,7 @@ const WeatherTemperatureChart = () => {
   // Sử dụng dữ liệu từ API nếu có, nếu không thì dùng dữ liệu mẫu
   const displayData = hourlyData.length > 0 ? hourlyData : defaultHourlyData;
 
-  // Dữ liệu đã định dạng cho LineChart dựa trên tab đang chọn
+  // Chỉnh sửa cách hiển thị trong chartData để làm tròn lượng mưa phù hợp
   const chartData = displayData.map((item) => {
     // Nếu có dữ liệu gốc, lấy giá trị tương ứng với tab hiện tại
     const value = item.originalData
@@ -189,9 +206,16 @@ const WeatherTemperatureChart = () => {
       ? item.value
       : 0;
 
+    // Định dạng số liệu hiển thị dựa trên loại tab
+    let displayValue = value;
+    if (selectedTab === "Rain/Snow") {
+      // Hiển thị lượng mưa với 3 chữ số thập phân
+      displayValue = value.toFixed(3);
+    }
+
     return {
       value: value,
-      dataPointText: `${value}${currentTab.unit}`,
+      dataPointText: `${displayValue}${currentTab.unit}`,
       label: item.label,
     };
   });

@@ -45,6 +45,20 @@ function _layout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Setting",
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              name="cog"
+              size={size ?? 24}
+              color={focused ? "#007AFF" : "gray"}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
