@@ -1,16 +1,5 @@
-import {
-  Text,
-  View,
-  StatusBar,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-  Animated,
-} from "react-native";
+import { Text, View, Image, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -28,14 +17,7 @@ import { useFetchWeatherLocation } from "../../hooks/useFetchWeatherLocation";
 import HourlyForecast from "../../components/HourlyForecast";
 
 // icons
-import { MapPinIcon } from "react-native-heroicons/solid";
-import { SunIcon } from "react-native-heroicons/solid";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {
-  CalendarDaysIcon,
-  MagnifyingGlassIcon,
-  ChevronRightIcon,
-} from "react-native-heroicons/outline";
+import { CalendarDaysIcon } from "react-native-heroicons/outline";
 
 //Notification Services
 import { scheduleWeatherNotification } from "../../services/scheduleWeatherNotification";
@@ -51,13 +33,11 @@ import AirQuality from "../../components/AirQuality";
 import WindCard from "../../components/WindCard";
 import UVCard from "../../components/UVCard";
 import WeatherMetricCard from "../../components/WeatherMetricCard";
+import CurrentWeather from "../../components/CurrentWeather";
 
 export default function Index() {
   const [cityName, setCityName] = useState("singapore");
   const [searchCity, setSearchCity] = useState("");
-  const [locations, setLocations] = useState([]);
-  const [showSearch, setShowSearch] = useState(false);
-  const [weather, setWeather] = useState(null);
   const [units, setUnits] = useState("metric"); // Thêm state cho đơn vị đo
   const params = useLocalSearchParams();
   const cityNameParam = params.cityName;
@@ -71,6 +51,22 @@ export default function Index() {
     getWindSpeedUnit,
     getPrecipitationUnit,
   } = useUnitsContext();
+
+  // Fetch dữ liệu thời tiết trực tiếp từ React Query hooks
+  const {
+    weatherForecastData,
+    isWeatherForecastLoading,
+    weatherForecastError,
+  } = useFetchWeatherForecast({ cityName, days: "7" });
+
+  const {
+    weatherLocationData,
+    isWeatherLocationLoading,
+    weatherLocationError,
+  } = useFetchWeatherLocation({
+    cityName: searchCity,
+    enabled: !!searchCity && searchCity.length > 2, // chỉ fetch khi có searchCity đủ dài
+  });
 
   // Thay đổi cách hiển thị nhiệt độ
   const displayTemperature = (temp) => {
@@ -103,20 +99,6 @@ export default function Index() {
       setCityName(cityNameParam);
     }
   }, [cityNameParam, cityName]);
-  const {
-    weatherForecastData,
-    isWeatherForecastLoading,
-    weatherForecastError,
-  } = useFetchWeatherForecast({ cityName, days: "7" });
-
-  const {
-    weatherLocationData,
-    isWeatherLocationLoading,
-    weatherLocationError,
-  } = useFetchWeatherLocation({
-    cityName: searchCity,
-    enabled: !!searchCity && searchCity.length > 2, // chỉ fetch khi có searchCity đủ dài
-  });
 
   // Tải đơn vị đo từ AsyncStorage khi component mount
   useEffect(() => {
@@ -147,38 +129,13 @@ export default function Index() {
     saveUnits();
   }, [units]);
 
-  // khi có dữ liệu từ API, set lại giá trị cho weather
-
-  function handleLocation(loc) {
-    // console.log("handleLocation", loc);
-    setLocations([]);
-    setCityName(loc.name);
-    setShowSearch(false);
-
-    // Lưu thành phố đã chọn để background task có thể sử dụng
-    AsyncStorage.setItem("lastCity", loc.name);
-  }
-
-  function handleSearch(value) {
-    setSearchCity(value);
-  }
-
-  useEffect(() => {
-    if (weatherForecastData) setWeather(weatherForecastData);
-  }, [weatherForecastData]);
-
-  useEffect(() => {
-    if (weatherLocationData) {
-      setLocations(weatherLocationData);
-    }
-  }, [weatherLocationData]);
-
   function getWeatherImage(condition) {
     if (!condition) return weatherImages.other;
     // Chuẩn hóa: loại bỏ khoảng trắng dư, viết hoa chữ cái đầu mỗi từ
     const key = condition.trim();
     return weatherImages[key] || weatherImages.other;
   }
+
   function getWeatherBackground(condition) {
     if (!condition) return weatherBackgroundImages.other;
     // Chuẩn hóa: loại bỏ khoảng trắng dư, viết hoa chữ cái đầu mỗi từ
@@ -186,29 +143,21 @@ export default function Index() {
     return weatherBackgroundImages[key] || weatherBackgroundImages.other;
   }
 
-  const current = weather?.current;
-  const location = weather?.location;
-
-  //chỉ gọi hàm tìm kiếm sau khi người dùng ngừng gõ một khoảng thời gian
-  const handleTextDebounce = useCallback(debounce(handleSearch, 1200), []);
+  // Sử dụng trực tiếp weatherForecastData thay vì state weather
+  const current = weatherForecastData?.current;
+  const location = weatherForecastData?.location;
 
   // ---------------- Fetch Hourly forecast data ------------------
   const today = new Date();
   const formattedDate = today.toISOString().split("T")[0]; // "2025-05-03"
-  // console.log("formattedDate", formattedDate);
 
-  const now = new Date(weather?.location.localtime);
+  const now = location ? new Date(location.localtime) : new Date();
   const nowHour = now.getHours();
 
-  // console.log("now", now);
-
-  // console.log("weather.forecast.forecastday", weather?.forecast.forecastday);
   // Tìm forecastday đúng ngày hôm nay
-  const todayForecast = weather?.forecast.forecastday.find(
+  const todayForecast = weatherForecastData?.forecast?.forecastday?.find(
     (item) => item.date === formattedDate
   );
-
-  // console.log("todayForecast", todayForecast);
 
   // Nếu tìm thấy, lọc các giờ từ giờ hiện tại trở đi, lấy tối đa 12 tiếng
   let hourly12h = [];
@@ -220,7 +169,6 @@ export default function Index() {
       })
       .slice(0, 12);
   }
-  // console.log("hourly12h", hourly12h);
 
   // --------------- Fetch Daily forecast data ------------------
 
@@ -228,9 +176,9 @@ export default function Index() {
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   // Lấy 7 ngày đầu tiên (nếu có đủ)
-  const dailyForecast = weather?.forecast?.forecastday
-    .slice(0, 7)
-    .map((item) => {
+  const dailyForecast = weatherForecastData?.forecast?.forecastday
+    ?.slice(0, 7)
+    ?.map((item) => {
       const dateObj = new Date(item.date);
       return {
         day: daysOfWeek[dateObj.getDay()], // Tên viết tắt ngày trong tuần
@@ -240,29 +188,23 @@ export default function Index() {
       };
     });
 
-  // console.log("dailyForecast", dailyForecast);
-
   // --------------- Fetch Wind information data ------------------
 
-  const windSpeed = weather?.current.wind_kph; // 11.5
-
-  const windDirText = weather?.current.wind_dir;
-
-  const windDirDegree = weather?.current.wind_degree; // 200
-
-  // --------------- Fetch Air Quality data ------------------
+  const windSpeed = current?.wind_kph; // 11.5
+  const windDirText = current?.wind_dir;
+  const windDirDegree = current?.wind_degree; // 200
 
   // --------------- Fetch Other information data ------------------
   //humidity
-  const humidity = weather?.current?.humidity; // ví dụ: 81
+  const humidity = current?.humidity; // ví dụ: 81
   //pressure
-  const pressure = weather?.current?.pressure_in; // ví dụ: 29.82 inHg
+  const pressure = current?.pressure_in; // ví dụ: 29.82 inHg
   //Feel likes
-  const feelLikes = weather?.current?.feelslike_c; // ví dụ: 29.82 inHg
+  const feelLikes = current?.feelslike_c; // ví dụ: 29.82 inHg
   //cloud
-  const cloud = weather?.current?.cloud; // ví dụ: 29.82 inHg
+  const cloud = current?.cloud; // ví dụ: 29.82 inHg
   //rain level
-  const rainLevel = weather?.current?.precip_mm; // ví dụ: 29.82 inHg
+  const rainLevel = current?.precip_mm; // ví dụ: 29.82 inHg
 
   // Notification setup
   useNotificationSetup();
@@ -270,11 +212,11 @@ export default function Index() {
     // Lần đầu tiên mở app
     const hasShownInitialNotification = async () => {
       const hasShown = await AsyncStorage.getItem("initialNotificationShown");
-      if (!weather) return;
+      if (!weatherForecastData) return;
       if (!hasShown || hasShown === null) {
         try {
           // Chỉ hiển thị thông báo và lưu trạng thái nếu chưa hiển thị
-          await scheduleWeatherNotification(weather);
+          await scheduleWeatherNotification(weatherForecastData);
           await AsyncStorage.setItem("initialNotificationShown", "true");
         } catch (error) {
           console.error("Error scheduling notification:", error);
@@ -291,7 +233,8 @@ export default function Index() {
       // Dọn dẹp khi component unmount
       stopBackgroundTask();
     };
-  }, [weather]);
+  }, [weatherForecastData]);
+
   return (
     <View className="flex-1">
       {/* <StatusBar
@@ -337,122 +280,17 @@ export default function Index() {
               className="flex flex-1"
               edges={["right", "bottom", "left", "top"]}
             >
-              <View style={{ height: 56 }} className="mx-4 ">
-                <View className="flex-row items-center px-2 rounded-full bg-slate-500">
-                  <TextInput
-                    placeholder="Search city"
-                    onChangeText={handleTextDebounce}
-                    placeholderTextColor={"lightgray"}
-                    className="flex-1 p-3 text-white"
-                    onFocus={() => setShowSearch(true)}
-                  />
-                  <TouchableOpacity
-                    onPress={() => setShowSearch(false)}
-                    className="p-3 rounded-full bg-black/55 backdrop-blur-sm"
-                  >
-                    <MagnifyingGlassIcon color="white" size={20} />
-                  </TouchableOpacity>
-                </View>
-
-                {locations.length > 0 && showSearch ? (
-                  <View
-                    style={{
-                      position: "absolute",
-                      top: 64, // hoặc top: 56/60 tùy chiều cao thanh search
-                      left: 0,
-                      width: "100%",
-                      zIndex: 100, // Đảm bảo cao hơn các thành phần khác
-                      elevation: 10, // Thêm cho Android
-                      borderRadius: 24,
-                      backgroundColor: "#e5e7eb", // bg-gray-300
-                    }}
-                  >
-                    {locations.map((loc, index) => {
-                      let showBorder = index + 1 != locations.length;
-                      let borderclass = showBorder
-                        ? "border-b-2 border-b-gray-400"
-                        : "";
-                      return (
-                        <TouchableOpacity
-                          onPress={() => handleLocation(loc)}
-                          key={index}
-                          className={
-                            "flex-row items-center border-0 p-3 px-4 mb-1 " +
-                            borderclass
-                          }
-                        >
-                          <MapPinIcon size={20} color="gray" />
-                          <Text className="ml-2 text-lg text-black">
-                            {loc?.name}, {loc?.country}
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-                ) : null}
-              </View>
               {/* forecast section */}
-              <View
-                className="flex justify-around flex-1 mx-4 mb-2 "
-                style={{ height: 500 }}
-              >
-                <Text className="text-2xl font-bold text-center text-white">
-                  {location?.name}
-                  <Text className="text-lg font-semibold text-gray-300">
-                    {", " + location?.country}
-                  </Text>
-                </Text>
-                {/* weather image */}
-                <View className="flex-row justify-center">
-                  <Image
-                    source={getWeatherImage(current?.condition?.text)}
-                    className="w-52 h-52"
-                  />
-                </View>
-                {/* Degree celcius */}
-                <View className="space-y-2">
-                  <Text className="ml-5 text-6xl font-bold text-center text-white">
-                    {displayTemperature(current?.temp_c)}
-                  </Text>
-                  <Text className="text-xl tracking-widest text-center text-white">
-                    {current?.condition?.text}
-                  </Text>
-                </View>
-                {/* Other stats */}
-                <View className="flex-row justify-between mx-4">
-                  <View className="flex flex-row items-center space-x-2">
-                    <Image
-                      source={require("../../../assets/icons/wind.png")}
-                      className="w-6 h-6"
-                    />
-                    <Text className="font-semibold text-white textbase">
-                      {" "}
-                      {Math.round(convertWindSpeed(windSpeed))}{" "}
-                      {getWindSpeedUnit()}
-                    </Text>
-                  </View>
-                  <View className="flex flex-row items-center space-x-2">
-                    <Image
-                      source={require("../../../assets/icons/drop.png")}
-                      className="w-6 h-6"
-                    />
-                    <Text className="font-semibold text-white textbase">
-                      {" "}
-                      {humidity}
-                    </Text>
-                  </View>
-                  <View className="flex flex-row items-center space-x-2">
-                    <Image
-                      source={require("../../../assets/icons/sun.png")}
-                      className="w-6 h-6"
-                    />
-                    <Text className="font-semibold text-white textbase">
-                      {" "}
-                      10:12am
-                    </Text>
-                  </View>
-                </View>
-              </View>
+              <CurrentWeather
+                location={location}
+                current={current}
+                getWeatherImage={getWeatherImage}
+                displayTemperature={displayTemperature}
+                convertWindSpeed={convertWindSpeed}
+                getWindSpeedUnit={getWindSpeedUnit}
+                windSpeed={windSpeed}
+                humidity={humidity}
+              />
               {/* Hourly forecast */}
               <HourlyForecast
                 hourly12h={hourly12h}
@@ -464,7 +302,7 @@ export default function Index() {
               {/* Daily forecast */}
               <DailyForecast
                 dailyForecast={dailyForecast}
-                weather={weather}
+                weather={weatherForecastData}
                 location={location}
                 getWeatherImage={getWeatherImage}
                 displayTemperature={displayTemperature}
@@ -480,7 +318,7 @@ export default function Index() {
                 <View className="flex flex-row flex-wrap justify-between mx-5">
                   {/* Wind speed */}
                   <WindCard
-                    weather={weather}
+                    weather={weatherForecastData}
                     location={location}
                     imageSource={require("../../../assets/icons/pinwheel.png")}
                     title="Wind speed"
@@ -492,7 +330,7 @@ export default function Index() {
 
                   {/* Wind direction */}
                   <WindCard
-                    weather={weather}
+                    weather={weatherForecastData}
                     location={location}
                     imageSource={require("../../../assets/icons/compass.png")}
                     title="Wind direction"
@@ -504,7 +342,7 @@ export default function Index() {
                 </View>
               </View>
               {/* Air Quality */}
-              <AirQuality weather={weather} />
+              <AirQuality weather={weatherForecastData} />
               {/* Other info */}
               <View className="mb-4 space-y-3">
                 <View className="flex-row items-center gap-1 mx-5 mb-4 space-x-2">
@@ -515,15 +353,16 @@ export default function Index() {
                 </View>
                 <View className="flex flex-row flex-wrap justify-between mx-5">
                   {/* UV Index */}
-                  <UVCard weather={weather} location={location} />
+                  <UVCard weather={weatherForecastData} location={location} />
                   {/* // Component Humidity - sẽ tự động có
                   pathname="/charts/DaysDetails" */}
                   <WeatherMetricCard
                     iconName="water-percent"
                     title="Humidity"
                     value={humidity}
+                    unit="%"
                     description="The dew point is 23.4° right now."
-                    forecastData={weather?.forecast?.forecastday}
+                    forecastData={weatherForecastData?.forecast?.forecastday}
                     locationData={location}
                     tabName="Humidity"
                   />
@@ -533,8 +372,9 @@ export default function Index() {
                     iconName="cloud"
                     title="Cloud"
                     value={cloud}
+                    unit="%"
                     description="The dew point is 23.4° right now."
-                    forecastData={weather?.forecast?.forecastday}
+                    forecastData={weatherForecastData?.forecast?.forecastday}
                     locationData={location}
                     tabName="Cloud cover"
                   />
@@ -546,7 +386,7 @@ export default function Index() {
                     value={displayPrecipitation(rainLevel)}
                     unit=""
                     description="The dew point is 23.4° right now."
-                    forecastData={weather?.forecast?.forecastday}
+                    forecastData={weatherForecastData?.forecast?.forecastday}
                     locationData={location}
                     tabName="Rain level"
                   />
