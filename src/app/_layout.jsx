@@ -49,7 +49,21 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen name="settings" options={{ headerShown: false }} />
-          <Stack.Screen name="cities/AddCityPage" />
+          <Stack.Screen
+            name="cities/AddCityPage"
+            options={{
+              headerStyle: {
+                backgroundColor: "#1c2732", // Màu giống với màn hình ở dưới
+              },
+              headerTintColor: "#fff", // Màu chữ trắng
+              headerTitleStyle: {
+                fontWeight: "bold",
+              },
+              headerShadowVisible: true, // Hiển thị shadow
+              title: "Weather", // Tiêu đề phù hợp với ứng dụng của bạn
+              // Hoặc bạn có thể customize thêm headerTitle
+            }}
+          />
         </Stack>
       </UnitsProvider>
     </QueryClientProvider>
