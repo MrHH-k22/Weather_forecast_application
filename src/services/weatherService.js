@@ -15,7 +15,8 @@ const apiCall = async (endpoint) => {
   };
   try {
     const response = await axios.request(options);
-    // console.log("weather data: ", response.data);
+    console.log("weather data: ", response.data);
+    // console.log("Call API");
     return response.data;
   } catch (err) {
     console.log("error: ", err);

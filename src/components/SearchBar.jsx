@@ -67,7 +67,7 @@ function SearchBar({ onSearchStateChange, onLocationSelect }) {
 
     // Clear the dropdown after selection
     setLocations([]);
-    setSearchQuery(location.name);
+    setSearchQuery("");
   }
 
   return (

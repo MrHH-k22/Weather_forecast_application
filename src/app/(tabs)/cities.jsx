@@ -3,112 +3,76 @@ import {
   Image,
   StatusBar,
   Text,
-  TextInput,
   Platform,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
-import {
-  MagnifyingGlassIcon,
-  CheckIcon,
-  XMarkIcon,
-  TrashIcon,
-} from "react-native-heroicons/outline";
-import { Link, useRouter } from "expo-router";
-import { Search } from "lucide-react";
+import React, { useState } from "react";
+import { XMarkIcon, TrashIcon } from "react-native-heroicons/outline";
+import { useRouter } from "expo-router";
 import SearchBar from "../../components/SearchBar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import CityWeatherCard from "../../components/CityWeatherCard";
 
 function Cities() {
   const router = useRouter();
-  const [weatherData, setWeatherData] = useState([
-    {
-      id: 1,
-      location: "Biên Hòa",
-      city: null,
-      temperature: 28,
-      condition: "Mưa nhỏ",
-      high: 32,
-      low: 26,
-      time: null,
-      bgColor: "bg-slate-500",
-      selected: false,
-    },
-    {
-      id: 2,
-      location: "Thủ Đức",
-      city: null,
-      temperature: 29,
-      condition: "Mưa",
-      high: 32,
-      low: 26,
-      time: null,
-      bgColor: "bg-slate-500",
-      selected: false,
-    },
-    {
-      id: 3,
-      location: "Singapore, Singapore",
-      city: null,
-      temperature: 27,
-      condition: "Nhiều mây",
-      high: 28,
-      low: 19,
-      time: null,
-      bgColor: "bg-indigo-500",
-      selected: false,
-    },
-    {
-      id: 4,
-      location: "London, United Kingdom",
-      city: null,
-      temperature: 6,
-      condition: "Quang",
-      high: 19,
-      low: 5,
-      time: null,
-      bgColor: "bg-blue-500",
-      selected: false,
-    },
-  ]);
-
+  const [favorites, setFavorites] = useState([]);
+  const [selectedItems, setSelectedItems] = useState({});
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
   const [isSearchActive, setIsSearchActive] = useState(false);
 
-  const toggleSelection = (id) => {
-    const updatedData = weatherData.map((item) =>
-      item.id === id ? { ...item, selected: !item.selected } : item
-    );
-    setWeatherData(updatedData);
-
-    // Update selected items
-    const selectedId = updatedData.find((item) => item.id === id).selected
-      ? id
-      : null;
-    if (selectedId) {
-      setSelectedItems([...selectedItems.filter((i) => i !== id), id]);
-    } else {
-      setSelectedItems(selectedItems.filter((i) => i !== id));
+  const fetchFavorites = async () => {
+    try {
+      const favoritesData = await AsyncStorage.getItem("favorites");
+      if (favoritesData !== null) {
+        setFavorites(JSON.parse(favoritesData));
+      } else {
+        // Set example favorites for demonstration
+        const initialFavorites = ["Ho Chi Minh City, Vietnam", "Paris, France"];
+        setFavorites(initialFavorites);
+        await AsyncStorage.setItem(
+          "favorites",
+          JSON.stringify(initialFavorites)
+        );
+      }
+    } catch (error) {
+      console.log("Error retrieving favorites from AsyncStorage:", error);
     }
   };
 
-  const deleteSelected = () => {
-    const filteredData = weatherData.filter((item) => !item.selected);
-    setWeatherData(filteredData);
-    setSelectedItems([]);
-    setIsSelectionMode(false);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchFavorites();
+    }, [])
+  );
+
+  const toggleSelection = (city) => {
+    if (!isSelectionMode) {
+      setIsSelectionMode(true);
+    }
+    setSelectedItems((prev) => ({
+      ...prev,
+      [city]: !prev[city],
+    }));
   };
 
-  const handleLongPress = () => {
-    setIsSelectionMode(true);
+  const deleteSelected = async () => {
+    const newFavorites = favorites.filter((city) => !selectedItems[city]);
+    setFavorites(newFavorites);
+    setSelectedItems({});
+    setIsSelectionMode(false);
+
+    try {
+      await AsyncStorage.setItem("favorites", JSON.stringify(newFavorites));
+    } catch (error) {
+      console.log("Error saving favorites to AsyncStorage:", error);
+    }
   };
 
   const cancelSelection = () => {
-    const resetData = weatherData.map((item) => ({ ...item, selected: false }));
-    setWeatherData(resetData);
-    setSelectedItems([]);
+    setSelectedItems({});
     setIsSelectionMode(false);
   };
 
@@ -121,24 +85,28 @@ function Cities() {
     }
   };
 
-  const selectedCount = weatherData.filter((item) => item.selected).length;
+  const selectedCount = Object.values(selectedItems).filter(Boolean).length;
 
-  // Thêm các hàm mới để xử lý trạng thái tìm kiếm
   const handleSearchStateChange = (isActive) => {
     setIsSearchActive(isActive);
-
-    // Nếu người dùng bắt đầu tìm kiếm, thoát khỏi chế độ chọn
     if (isActive && isSelectionMode) {
       cancelSelection();
     }
   };
 
-  const handleLocationSelect = (location) => {
-    // Điều hướng đến vị trí đã chọn
-    navigateToHome(location.name);
-
-    // Xóa trạng thái tìm kiếm
+  const navigateToAddCity = (cityName, countryName) => {
+    if (cityName) {
+      router.push({
+        pathname: "/cities/AddCityPage",
+        params: { cityName, countryName },
+      });
+    }
     setIsSearchActive(false);
+  };
+
+  const handleLocationSelect = (location) => {
+    setIsSearchActive(false);
+    navigateToAddCity(location.name, location.country);
   };
 
   return (
@@ -180,70 +148,20 @@ function Cities() {
           </View>
         )}
 
-        {/* Chỉ hiển thị danh sách thành phố khi không tìm kiếm */}
         {!isSearchActive && (
           <ScrollView
             className="flex-1 mt-5"
             showsVerticalScrollIndicator={false}
           >
-            {weatherData.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() =>
-                  isSelectionMode
-                    ? toggleSelection(item.id)
-                    : navigateToHome(item.location)
-                }
-                onLongPress={handleLongPress}
-                activeOpacity={0.8}
-              >
-                <View
-                  className={`${item.bgColor} rounded-3xl mb-4 p-4 ${
-                    item.selected ? "border-2 border-white" : ""
-                  }`}
-                >
-                  <View className="flex-row items-start justify-between">
-                    <View>
-                      <Text className="text-lg font-semibold text-white">
-                        {item.location}
-                      </Text>
-                      {item.city && (
-                        <Text className="text-sm text-white">{item.city}</Text>
-                      )}
-                      {item.condition && (
-                        <Text className="text-sm text-white">
-                          {item.condition}
-                        </Text>
-                      )}
-                    </View>
-                    <View className="flex-row items-center">
-                      <Text className="text-5xl font-light text-white">
-                        {item.temperature}°
-                      </Text>
-                      {isSelectionMode && (
-                        <View
-                          className={`w-6 h-6 rounded-full mr-2 items-center justify-center ${
-                            item.selected
-                              ? "bg-blue-500"
-                              : "bg-white bg-opacity-30"
-                          }`}
-                        >
-                          {item.selected && (
-                            <CheckIcon color="white" size={16} />
-                          )}
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                  <View className="flex-row items-start justify-between mt-1">
-                    <Text className="text-white">{item.condition}</Text>
-                    <View className="flex-row items-center justify-end flex-1">
-                      <Text className="text-white">H:{item.high}° </Text>
-                      <Text className="text-white">L:{item.low}°</Text>
-                    </View>
-                  </View>
-                </View>
-              </TouchableOpacity>
+            {favorites.map((city, index) => (
+              <CityWeatherCard
+                key={index}
+                city={city}
+                isSelectionMode={isSelectionMode}
+                selected={!!selectedItems[city]}
+                onSelect={toggleSelection}
+                onNavigate={navigateToHome}
+              />
             ))}
           </ScrollView>
         )}

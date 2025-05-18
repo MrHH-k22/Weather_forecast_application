@@ -11,6 +11,7 @@ import Feather from "react-native-vector-icons/Feather";
 import { format } from "date-fns";
 import { useLocalSearchParams } from "expo-router";
 import { getMaxValueForTab, getMinValueForTab } from "../../utils/helper";
+import { useUnitsContext } from "../../context/UnitsContext"; // Thêm import useUnitsContext
 
 const WeatherTemperatureChart = () => {
   // Lấy daysForecast từ params URL
@@ -22,6 +23,16 @@ const WeatherTemperatureChart = () => {
 
   const tabFromParams = params.tab || "Temperature";
 
+  // Thêm useUnitsContext để sử dụng các hàm chuyển đổi đơn vị
+  const {
+    convertTemperature,
+    convertWindSpeed,
+    convertPrecipitation,
+    getTemperatureUnit,
+    getWindSpeedUnit,
+    getPrecipitationUnit,
+  } = useUnitsContext();
+
   // Sử dụng tab từ params hoặc mặc định là "Temperature"
   const [selectedTab, setSelectedTab] = useState(tabFromParams);
 
@@ -32,21 +43,20 @@ const WeatherTemperatureChart = () => {
   const totalChartWidth = dayWidth * (daysForecast?.length || 7);
 
   // Các tab tùy chọn cho biểu đồ với màu sắc và đơn vị tương ứng
-
   const tabs = [
     {
       id: "Temperature",
       icon: "thermometer",
       color: "#6B7280",
       chartColor: "#FFD700",
-      unit: "°",
+      unit: getTemperatureUnit(),
     },
     {
       id: "Rain level",
       icon: "cloud-rain",
       color: "#6B7280",
       chartColor: "#3B82F6",
-      unit: "mm",
+      unit: getPrecipitationUnit(),
     },
     {
       id: "UV",
@@ -60,7 +70,7 @@ const WeatherTemperatureChart = () => {
       icon: "wind",
       color: "#6B7280",
       chartColor: "#64748B",
-      unit: "km/h",
+      unit: getWindSpeedUnit(),
     },
     {
       id: "Humidity",
@@ -92,20 +102,20 @@ const WeatherTemperatureChart = () => {
     // console.log("day", day);
     switch (tabId) {
       case "Temperature":
-        return Math.round(day.avgtemp_c);
+        return Math.round(convertTemperature(day.avgtemp_c));
       case "Rain level":
-        return day.totalprecip_mm;
+        return Number(convertPrecipitation(day.totalprecip_mm).toFixed(3));
       case "UV":
         return day.uv;
       case "Wind speed":
-        return Math.round(day.maxwind_kph);
+        return Math.round(convertWindSpeed(day.maxwind_kph));
       case "Humidity":
         return day.avghumidity;
       case "Cloud cover":
         // Sử dụng giá trị độ che phủ mây trung bình
         return day.avgvis_km > 9 ? 20 : 60;
       default:
-        return Math.round(day.avgtemp_c);
+        return Math.round(convertTemperature(day.avgtemp_c));
     }
   };
 
@@ -165,9 +175,16 @@ const WeatherTemperatureChart = () => {
       ? item.value
       : 0;
 
+    // Định dạng số liệu hiển thị dựa trên loại tab
+    let displayValue = value;
+    if (selectedTab === "Rain level") {
+      // Hiển thị lượng mưa với 3 chữ số thập phân
+      displayValue = value.toFixed(3);
+    }
+
     return {
       value: value,
-      dataPointText: `${value}${currentTab.unit}`,
+      dataPointText: `${displayValue}${currentTab.unit}`,
       label: item.label,
     };
   });

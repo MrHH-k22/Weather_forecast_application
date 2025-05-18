@@ -2,6 +2,10 @@ import * as Notifications from "expo-notifications";
 
 export const scheduleWeatherNotification = async (weather) => {
   try {
+    if (!weather) {
+      console.error("No weather data provided for notification");
+      return;
+    }
     // Cancel any existing notifications
     await Notifications.cancelAllScheduledNotificationsAsync();
     // Schedule a new local notification
@@ -14,7 +18,7 @@ export const scheduleWeatherNotification = async (weather) => {
         priority: "high",
       },
       trigger: {
-        seconds: 1,
+        seconds: 5,
         repeats: false,
       },
     });
