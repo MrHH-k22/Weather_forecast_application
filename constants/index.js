@@ -29,7 +29,16 @@ export const weatherBackgroundImages = {
   "Heavy rain": require("../assets/images/rainBackground.jpg"),
   "Heavy rain at times": require("../assets/images/rainBackground.jpg"),
   "Moderate or heavy freezing rain": require("../assets/images/rainBackground.jpg"),
-  "Moderate or heavy rain shower": require("../assets/images/rainBackground.jpg"),
-  "Moderate or heavy rain with thunder": require("../assets/images/rainBackground.jpg"),
+  "Moderate or heavy rain shower": require("../assets/images/heavyrainBackground.jpg"),
+  "Moderate or heavy rain with thunder": require("../assets/images/heavyrainBackground.jpg"),
   other: require("../assets/images/sunnyBackground.jpg"),
+};
+
+export const airQualityImages = {
+  1: require("../assets/images/greenAirQuality.png"),
+  2: require("../assets/images/yellowAirQuality.png"),
+  3: require("../assets/images/brownAirQuality.png"),
+  4: require("../assets/images/redAirQuality.png"),
+  5: require("../assets/images/purpleAirQuality.png"),
+  6: require("../assets/images/darkredAirQuality.png"),
 };
