@@ -4,8 +4,12 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Image,
   StatusBar,
+  Platform,
+  ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, Stack } from "expo-router";
 import { ChevronLeftIcon } from "react-native-heroicons/outline";
 import { useUnitsContext } from "../../context/UnitsContext";
@@ -21,137 +25,154 @@ export default function UnitsSettings() {
     setPrecipitationUnit,
   } = useUnitsContext();
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
+
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          headerStyle: { backgroundColor: "#1c2732" },
-          headerTintColor: "#fff",
-          headerTitleStyle: { fontWeight: "bold" },
-          headerTitle: "Units Settings",
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <ChevronLeftIcon size={25} color="#fff" />
-            </TouchableOpacity>
-          ),
-        }}
+    <View className="relative flex-1">
+      <StatusBar
+        barStyle="light-content"
+        translucent={true}
+        backgroundColor="transparent"
       />
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Temperature</Text>
-        <View style={styles.optionsRow}>
+      <Image
+        blurRadius={70}
+        source={require("../../../assets/images/bg.png")}
+        className="absolute top-0 left-0 w-full h-full"
+      />
+      <SafeAreaView
+        className="flex flex-1 px-4"
+        style={{
+          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+        }}
+        edges={["right", "bottom", "left"]}
+      >
+        <View className="flex-row relative z-50 mt-4">
           <TouchableOpacity
-            style={[
-              styles.optionButton,
-              temperatureUnit === "celsius" && styles.activeOption,
-            ]}
-            onPress={() => setTemperatureUnit("celsius")}
+            onPress={() => navigation.goBack()}
+            className="mr-3"
           >
-            <Text
-              style={[
-                styles.optionText,
-                temperatureUnit === "celsius" && styles.activeText,
-              ]}
-            >
-              °C
-            </Text>
+            <ChevronLeftIcon size={28} color="#fff" />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.optionButton,
-              temperatureUnit === "fahrenheit" && styles.activeOption,
-            ]}
-            onPress={() => setTemperatureUnit("fahrenheit")}
-          >
-            <Text
-              style={[
-                styles.optionText,
-                temperatureUnit === "fahrenheit" && styles.activeText,
-              ]}
-            >
-              °F
-            </Text>
-          </TouchableOpacity>
+          <Text className="text-3xl font-bold text-white">Units Settings</Text>
         </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Wind Speed</Text>
-        <View style={styles.optionsRow}>
-          <TouchableOpacity
-            style={[
-              styles.optionButton,
-              windSpeedUnit === "kmh" && styles.activeOption,
-            ]}
-            onPress={() => setWindSpeedUnit("kmh")}
-          >
-            <Text
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Temperature</Text>
+          <View style={styles.optionsRow}>
+            <TouchableOpacity
               style={[
-                styles.optionText,
-                windSpeedUnit === "kmh" && styles.activeText,
+                styles.optionButton,
+                temperatureUnit === "celsius" && styles.activeOption,
               ]}
+              onPress={() => setTemperatureUnit("celsius")}
             >
-              km/h
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.optionButton,
-              windSpeedUnit === "mph" && styles.activeOption,
-            ]}
-            onPress={() => setWindSpeedUnit("mph")}
-          >
-            <Text
+              <Text
+                style={[
+                  styles.optionText,
+                  temperatureUnit === "celsius" && styles.activeText,
+                ]}
+              >
+                °C
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[
-                styles.optionText,
-                windSpeedUnit === "mph" && styles.activeText,
+                styles.optionButton,
+                temperatureUnit === "fahrenheit" && styles.activeOption,
               ]}
+              onPress={() => setTemperatureUnit("fahrenheit")}
             >
-              mph
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.optionText,
+                  temperatureUnit === "fahrenheit" && styles.activeText,
+                ]}
+              >
+                °F
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Precipitation</Text>
-        <View style={styles.optionsRow}>
-          <TouchableOpacity
-            style={[
-              styles.optionButton,
-              precipitationUnit === "mm" && styles.activeOption,
-            ]}
-            onPress={() => setPrecipitationUnit("mm")}
-          >
-            <Text
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Wind Speed</Text>
+          <View style={styles.optionsRow}>
+            <TouchableOpacity
               style={[
-                styles.optionText,
-                precipitationUnit === "mm" && styles.activeText,
+                styles.optionButton,
+                windSpeedUnit === "kmh" && styles.activeOption,
               ]}
+              onPress={() => setWindSpeedUnit("kmh")}
             >
-              mm
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.optionButton,
-              precipitationUnit === "in" && styles.activeOption,
-            ]}
-            onPress={() => setPrecipitationUnit("in")}
-          >
-            <Text
+              <Text
+                style={[
+                  styles.optionText,
+                  windSpeedUnit === "kmh" && styles.activeText,
+                ]}
+              >
+                km/h
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[
-                styles.optionText,
-                precipitationUnit === "in" && styles.activeText,
+                styles.optionButton,
+                windSpeedUnit === "mph" && styles.activeOption,
               ]}
+              onPress={() => setWindSpeedUnit("mph")}
             >
-              in
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.optionText,
+                  windSpeedUnit === "mph" && styles.activeText,
+                ]}
+              >
+                mph
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Precipitation</Text>
+          <View style={styles.optionsRow}>
+            <TouchableOpacity
+              style={[
+                styles.optionButton,
+                precipitationUnit === "mm" && styles.activeOption,
+              ]}
+              onPress={() => setPrecipitationUnit("mm")}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  precipitationUnit === "mm" && styles.activeText,
+                ]}
+              >
+                mm
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.optionButton,
+                precipitationUnit === "in" && styles.activeOption,
+              ]}
+              onPress={() => setPrecipitationUnit("in")}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  precipitationUnit === "in" && styles.activeText,
+                ]}
+              >
+                in
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
