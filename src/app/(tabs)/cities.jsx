@@ -134,7 +134,7 @@ function Cities() {
               <XMarkIcon color="white" size={24} />
             </TouchableOpacity>
             <Text className="text-lg font-medium text-white">
-              {selectedCount} mục đã chọn
+              {selectedCount} item(s) selected
             </Text>
             <View style={{ width: 24 }} />
           </View>
@@ -173,7 +173,7 @@ function Cities() {
               onPress={deleteSelected}
             >
               <TrashIcon color="white" size={24} />
-              <Text className="text-lg font-medium text-white">Xóa</Text>
+              <Text className="text-lg font-medium text-white">Remove</Text>
             </TouchableOpacity>
           </View>
         )}
