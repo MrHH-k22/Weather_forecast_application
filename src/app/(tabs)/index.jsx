@@ -17,7 +17,7 @@ import { useFetchWeatherLocation } from "../../hooks/useFetchWeatherLocation";
 import HourlyForecast from "../../components/HourlyForecast";
 
 // icons
-import { CalendarDaysIcon } from "react-native-heroicons/outline";
+import { Bars3Icon } from "react-native-heroicons/outline";
 
 //Notification Services
 import { scheduleWeatherNotification } from "../../services/scheduleWeatherNotification";
@@ -34,9 +34,10 @@ import WindCard from "../../components/WindCard";
 import UVCard from "../../components/UVCard";
 import WeatherMetricCard from "../../components/WeatherMetricCard";
 import CurrentWeather from "../../components/CurrentWeather";
+import Feather from "react-native-vector-icons/Feather";
 
 export default function Index() {
-  const [cityName, setCityName] = useState("singapore");
+  const [cityName, setCityName] = useState("Ho Chi Minh City");
   const [searchCity, setSearchCity] = useState("");
   const [units, setUnits] = useState("metric"); // Thêm state cho đơn vị đo
   const params = useLocalSearchParams();
@@ -205,6 +206,8 @@ export default function Index() {
   const cloud = current?.cloud; // ví dụ: 29.82 inHg
   //rain level
   const rainLevel = current?.precip_mm; // ví dụ: 29.82 inHg
+  //dew point
+  const dewPoint = current?.dewpoint_c; // ví dụ: 29.82 inHg
 
   // Notification setup
   useNotificationSetup();
@@ -310,7 +313,7 @@ export default function Index() {
               {/* Wind information */}
               <View className="mb-4 space-y-3">
                 <View className="flex-row items-center gap-1 mx-5 mb-4 space-x-2">
-                  <CalendarDaysIcon size="22" color="white" />
+                  <Feather name="wind" size={22} color="white" />
                   <Text className="text-lg font-semibold text-white">
                     Wind information
                   </Text>
@@ -346,7 +349,7 @@ export default function Index() {
               {/* Other info */}
               <View className="mb-4 space-y-3">
                 <View className="flex-row items-center gap-1 mx-5 mb-4 space-x-2">
-                  <CalendarDaysIcon size="22" color="white" />
+                  <Bars3Icon size="22" color="white" />
                   <Text className="text-lg font-semibold text-white">
                     Other Information
                   </Text>
@@ -361,7 +364,7 @@ export default function Index() {
                     title="Humidity"
                     value={humidity}
                     unit="%"
-                    description="The dew point is 23.4° right now."
+                    description={`The dew point is ${dewPoint} right now.`}
                     forecastData={weatherForecastData?.forecast?.forecastday}
                     locationData={location}
                     tabName="Humidity"
@@ -373,7 +376,7 @@ export default function Index() {
                     title="Cloud"
                     value={cloud}
                     unit="%"
-                    description="The dew point is 23.4° right now."
+                    description="Clouds covering the sky right now"
                     forecastData={weatherForecastData?.forecast?.forecastday}
                     locationData={location}
                     tabName="Cloud cover"
@@ -385,7 +388,7 @@ export default function Index() {
                     title="Rain level"
                     value={displayPrecipitation(rainLevel)}
                     unit=""
-                    description="The dew point is 23.4° right now."
+                    description="Rainfall measured at this moment"
                     forecastData={weatherForecastData?.forecast?.forecastday}
                     locationData={location}
                     tabName="Rain level"
@@ -395,7 +398,7 @@ export default function Index() {
                     iconName="gauge"
                     title="Pressure"
                     value={`${pressure} inHg`}
-                    description="The dew point is 23.4° right now."
+                    description="Current atmospheric pressure reading"
                   />
                   <WeatherMetricCard
                     iconName="thermometer"

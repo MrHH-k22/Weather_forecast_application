@@ -3,14 +3,7 @@ import { Link } from "expo-router";
 import React from "react";
 import { SunIcon } from "react-native-heroicons/outline";
 import * as Progress from "react-native-progress"; // Importing Progress for the progress bar
-
-const UVIndexLevels = [
-  { min: 0, max: 1.9, level: "Low", color: "#00FF00" },
-  { min: 2, max: 4.9, level: "Moderate", color: "#FFFF00" },
-  { min: 5, max: 6.9, level: "High", color: "#FFA500" },
-  { min: 7, max: 9.9, level: "Very High", color: "#FF0000" },
-  { min: 10, max: 100, level: "Extreme", color: "#800080" },
-];
+import { UVIndexLevels } from "../../constants/string"; // Importing UV index levels
 
 function UVCard({ weather, location }) {
   function getUVIndexInfo(index) {

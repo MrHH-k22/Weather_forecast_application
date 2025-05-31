@@ -65,7 +65,10 @@ function CurrentWeather({
             source={require("../../assets/icons/drop.png")}
             className="w-6 h-6"
           />
-          <Text className="font-semibold text-white textbase"> {humidity}</Text>
+          <Text className="font-semibold text-white textbase">
+            {" "}
+            {humidity} %
+          </Text>
         </View>
         <View className="flex flex-row items-center space-x-2">
           <Image
