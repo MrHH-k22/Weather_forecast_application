@@ -24,8 +24,8 @@ function WindCard({
       }}
       asChild
     >
-      <TouchableOpacity className="p-6 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[170] flex flex-col justify-between items-center">
-        <Image source={imageSource} className="w-20 h-20" resizeMode="cover" />
+      <TouchableOpacity className="p-6 rounded-3xl bg-black/55 backdrop-blur-sm mb-6 h-[160] w-[165] flex flex-col justify-between items-center">
+        <Image source={imageSource} className="w-16 h-16" resizeMode="cover" />
         <Text className="text-lg text-center text-white">{title}</Text>
         <Text className="text-xl font-semibold text-center text-white">
           {value} {unit}

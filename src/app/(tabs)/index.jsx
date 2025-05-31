@@ -318,7 +318,7 @@ export default function Index() {
                     Wind information
                   </Text>
                 </View>
-                <View className="flex flex-row flex-wrap justify-between mx-5">
+                <View className="flex flex-row justify-between mx-5">
                   {/* Wind speed */}
                   <WindCard
                     weather={weatherForecastData}
